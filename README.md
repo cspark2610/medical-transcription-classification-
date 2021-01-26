@@ -10,13 +10,13 @@ Transcriptions will undergo 2 feature extraction methods, Count Vectorization(CV
 
 The following classifers will be used to:
 
-Stochastic Gradient Descent
+Stochastic Gradient Descent Classifier
 Multinomial Logistic Regression
-One vs Rest Logistic Regression
+Logistic Regression OVR
 Ada BoostedTrees
-Support Vector Machine
+Linear Support Vector Classifier OVR
 K-Nearest Neighbors Classifier
-Light GBM 
+LightGBM Classifier 
 
 * 'Medical transcriptions' or 'documents' will be used interchangably.
 
@@ -96,5 +96,54 @@ My reasoning was that perhaps boosting and one vs rest (OVR) approach might hold
 The scispaCy model did show metric improvements compared to pre-scispaCy metrics. And, considering the other functionalities the biomed sciscpaCy package contians, I assumme it is possible to improve metrics even further; for example, I did not convert medical abbreviations into words (MI = myocardialinfarction, BMI=bodymassindex, etc).
 
 Tfif mean F1-Scores are higher than CV scores; and the inclusion of spaCy package seems to have very little effect to CV.
+However, when accounting for vectorization type, most of the CV models tend to outperform TF
+
+TfIdf
+Stochastic Gradient Descent: unable to distinguish radiology and neurology well, otherwise robust
+One vs Rest Logistic Regression: strong in classifying classes with larger counts, weak in radiology
+Multinomial Logistic Regression: same as log reg OVR
+Linear Support Vector Classification OVR: very poor radiology nad neurology and neurosurgery, others strong
+Ada BoostedTrees: weak in generally all classes besides opthalmology and orthopedics
+but it is expected since max_depth =1
+K-Nearest Neighbors Classifier:strong in every category exceot radiology and neurosurgery
+Light GBM: very weak in radiology, neurology, hematology, nephrology, neurosurgery, otherwise robust
+
+CV
+Stochastic Gradient Descent: very weak distinguishing radiology and neurology and neurosurgery
+One vs Rest Logistic Regression: strong in classifying classes with larger counts, weak in radiology
+Multinomial Logistic Regression: same as log reg OVR
+Linear Support Vector Classification OVR: very poor radiology and weak in neurology and neurosurgery, others strong
+Ada BoostedTrees: weak in general, but it is expected since max_depth =1
+K-Nearest Neighbors Classifier:strong in every category exceot radiology and neurosurgery
+Light GBM: very weak in radiology, neurology, hematology, nephrology, neurosurgery, otherwise robust
+
+Main issue: radiology and neurology/neurosurgery (going back to t-SNE plot, this is expected; generalmedicine did not pose as a big issue as I thought it would
+
+## Hyperparameter Tuning using GridSearchCV and RandomSearchCV with 5-fold stratified cross-validaiton
+
+Since, RandomSearchCV is much faster than brute force GridSearchCV for tuning hyperparameters, I used RandomSearchCV to narrow down optimal hyperparameters then followed up using GridSearch 5-fold CV (very long training time).
+
+For LightGBM, I used Optuna, a hyperparameter optimization framework, for finding optimal hyperparameters at learning rate of 0.01. It calculates number of estimators, feature_fraction, num_leaves,  To avoid overfitting, the final step employs several regularization methods to best adjust the multi_logloss. 
+
+## Results
+Stochastic Gradient Descent Classifier with Tf-Idf vectorization produced highest F1-score, %. 
+
+Logistic Regression OVR 
+
+Multinomial Logistic Regression came close at second best score, %.
 
 
+
+Tf-Idf produced higher F1-scores 
+
+Linear Support Vector Classifier: Countvectorized tuned model outperformed Tf-Idf models.
+
+LightGBM Classifier: Tfidf tuned model produced highest
+AdaBoostedTree Classifier: Benefited greatly from hyperparameter tuning and produced a F1-score of 
+
+## Conclusions
+Including scispaCy's biomed package helped improve metrics for all classifiers with the exception of KKN Clf. It would be interesting to look deeper into what other funcionalities it possess that can possibly improve classification rates even more. Initially, I hypothesized GeneralMedicine or Cardiovascular/pulmonary class to be the biggest obstacle for this project; since the nature of general medicine being more generalized would encompass factors that would overlap with other specialties and Cardiovascular/pulmonary, due to having the highest transcript count, as well as it being a medical field that has numerous associations with morbidities in other specilties. KNN clf, as I thought, was relatively consistent even without tuning, it was on par with other tuned models, since specialties would assumed to cluster as long as feature extraction worked properly; but there is an extent to KNN clf's capability to distinguish overlapping classes. As all classifiers did with radiology and neurology. Even SGD clf, the highest performing classifer, was only able to achieve an F1-score of 33%, but, Neurology did increase signficantly to 59%. 
+
+Neurology and Radiology both comprise of similiar procedures such as MRIs and CT scans, in addition to neuroradiology, a specialty that wasn't accounted for with this dataset.
+
+In conclusion, with these findings, I believe by implementing more text preprocessing methods such as conversion of medical jargon, acronyms, partitioning transcripts by common headers such as, "SUBJECTIVE, HISTORY, CHIEF COMPLAINT", and classifying based on those partitions; moreover, inclusion of more classes or breakdown of more class to have classes like "neuroradiology, interventional radiology, etc". And, of course more data. 
