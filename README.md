@@ -74,6 +74,8 @@ With TSVD, the number of features were be able to reduce from 5000 to 812 for my
         Estimating number of components...
         1181 components needed to explain 95.0% variance.
         
+Normalization is also embedded within the function because while the outputs of TfIdf and Countvect, document term matrices, are normalized, LSA/SVD results are not. 
+
  ### t-SNE Plots and Text Explorations
 t-SNE Plots of Tf-idf and CV training set data presented good and bad clusters. My assumption is that medical specialties classess possess values that are both specialized and portions of general medicine. The clusters that are far easier to distinguish from others characterize the specialized portion, while, the other portion becomes integrated with other generalized portions from other specialties, and, evidently, general medicine. So, prior to any classificaiton, I believe it will produce decent base metrics, however, hyperparameter tuning and other adjustments will be difficult to untangle this "generalized med portion". KNN Classifier, specifically, should output well for base model but I doubt there will be much increase by tuning.
 
