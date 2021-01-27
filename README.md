@@ -1,19 +1,29 @@
-# medical-transcription-classification-
+# Classification of 13 Medical Specialties Through Transcriptions Notes Using ScispaCy, CountVectorization, and Tf-Idf 
 
-##
-Dataset from mtsamples.com
-Contains 500 medical transcriptions from 40 different medical specialties.
+## Dataset
+Dataset retrieved from kaggle.com - originally from mtsamples.com
+Contains 500 rows of de-identified medical information, which includes description, medical specialty, sample name, transcription, and keywords. For the scope of this project - only transcription and medical specialy will be used.
 
-Objective is to assess classification rates of medical specialties by medical transcriptions.
 
-Transcriptions will undergo 2 feature extraction methods, Count Vectorization(CV) and Tf-Idf(tf).
+## Approach
 
-The following classifers will be used to:
+Extract medical_specialty and transcription columns.
+Extract classes that will be used from our dependent var, medical_specialty.
+
+Split dataset into training and testing sets.
+
+Extract features using Count Vectorization(CV) and Tf-Idf(tf).
+
+Apply Truncated SVD onto term count/tf-idf matrices (LSA).
+
+EDA of  outputs - examine texts, possible patterns, visualize t-SNE plots, etc.
+
+Get baseline models for the following seven classifiers:
 
 Stochastic Gradient Descent Classifier
 Multinomial Logistic Regression
 Logistic Regression OVR
-Ada BoostedTrees
+AdaBoosted Decision Trees Classifier
 Linear Support Vector Classifier OVR
 K-Nearest Neighbors Classifier
 LightGBM Classifier 
@@ -21,48 +31,47 @@ LightGBM Classifier
 * 'Medical transcriptions' or 'documents' will be used interchangably.
 
 ### Pre-Vectorization: Filtering Classes (Dependent Variable Groups)
-There were no missing values for 'medical_specialty' and, only, 0.66% missing for transcription, which were dropped (rows).
+There are no missing values for medical_specialty and 0.66% missing for transcription, which were dropped.
 
-The 'number of transcriptions per medical specialty' plot shows that 'Surgery' has the greatest amount of documents, by far at 1,088, and shows evidence of very high class imbalance which will pose as an obstacle for classification. 
+PLOT 
 
-Therefore, after, digging further into 'Surgery', it appears that this class is more of a generalized category for both surgery related transcriptions and procedures that overlap with our other specialty groups, that are not 'Plastic' or 'Neurosurgery' (these exist as seperate classes). Therefore, despite the high loss of data, for several reasons the 'Surgery' group was filtered out.
+The figure shows evidence of very high class imbalance which will be an issue for classification. It also shows that 'Surgery' has far more transcripts than any other classes and a good amount of classes with very low transcripts.
 
-Additionally, the aim of this project is to classify medical specialties as in specialized fields of medicine, thus class such as 'OfficeNotes', 'Letters', 'IME-QME-WorkCompetc., and, arguably, 'Consult-HistoryandPhy' (our second highest data class).
+After looking into 'Surgery', it appears that this class is a combination of general surgeries, and specialized surgeries and procedures of other medical classes. For reasons of potential overlapping with other categogies as well as the enormous difference in transcripts it has compared to the other 39 classes, 'surgery' will be dropped. 
 
-Lastly, the number of classes that present low number document counts were dropped. After, several poor attempts, I decided that classes should have atleast 75 documents. 
+In addition, the aim of this project is to classify medical specialties; therefore 'ambulatory' classes such as 'OfficeNotes', 'Letters', 'IME-QME-WorkCompetc., and, 'Consult-HistoryandPhy' will be dropped.
 
-* I've attempted to salvage some of the lower classes by using SMOTE, ADASYN, SMOTEEN, and SMOTETOMEK, however these led to mainly resampling bias or noise, thus I made the decision to filter classes under 75 docs. However, I have not attempted downsampling  majority classess, simply due to having already lost a great amount of data from dropping 'surgery', but it may be possible to breakdown and redistribute 'surgery' data by identifying and extracting type of procedures and resample these data back but into their appropriate specialty class, however, these are options for future projects.
+Lastly, a threshold needs to be determined for having a certain number of transcripts. After threshold attempts at 25 and 50, I found 75 to be a good estimate.
 
 In total, 13 unique medical specialties were selected for text preprocessing.
+
+FIGURE
+
+* Note: I've attempted to salvage some of the lower classes by also using resampling techniques  SMOTE, ADASYN, SMOTEEN, and SMOTETOMEK, however, these methods were ineffective and only led to the addition of more noise. 
+
 ### Text Preprocessing
-Documents or transcriptions were passed through my preprcoessing function composed of several transformations.
 
-Initially, documents were split and converted into a list of words or 'tokens' that were 'lowercased' and converted contractions into tokens (i.e., that's -> that is).
-Followed by punctuation, digits, special characters, and certain outliers  ('mmddyyyy','abc', etc.) removal.
+Two text preprocessing functions were used for comparison. Both functions contained the same preprocessing steps except text_scispaCy_preprocess includes scispaCy's package, 'en_core_sci_sm', which is used to help extract biomedical texts and embeddings, in addition to other functionalities.
 
-Texts were then lemmatized, removed if were 'stopwords', stemmed and filtered if character length were less than 2.
+Prepocessing steps:
 
-* Later on, I came across scispaCy's package, 'en_core_sci_sm', that contained biomedical text embeddings, abbreviation linkages, and other specialized functionalities that seemed to be very useful within biomedical nlp field, but beyond the scope of this project; but, I included the package, for its' main capability to identify biomed terms, into my text preprocessing function to evaluate discrepenacies in output.
+Transcripts converted into list of words, lowercased, and fixed contractions (i.e., that's -> that is). Punctuations, stopwords, digits, special characters, and outliers  ('mmddyyyy','abc', etc.) were removed. Texts were lemmatized and texts with less than 2 characters were removed.
 
 ### Feature Extraction - Count Vectorization (CV) and term frequency inverse document frequency (Tf-IDF)(TF)
 
-For feature extraction, I developed a function that will begin with 'traintestsplit', stratified by classes at 20% test size. So, that CV and TF will only be fit to the training set, and fitted to all inclusive set, which would lead to data leakage. Transformations for training and testing sets were performed by vectorizers fitted only on training sets. 
+Dataset were split into training and testing sets using 'train_test_split' which were stratified by classes at 20% test size.
 
-Both CV and TF were conducted using 3-grams aka trigrams and set to analyze by 'word'.
-The number of max features was set to 5000 unique texts; although, increasing the number of features would be conducive for better classification rates, however, it also requires higher computing power and memory.
+Count Vectorization and Tf-Idf were set to using upto 3-grams, meaning unigrams, bigrams and trigrams would be extracted. Max features were set to 5000 unique texts; higher number of features used would lead to better classification rates, however, by doing so, will require higher computing power and memory.
 
-Texts with atleast 4(TF) or 5(CV) document appearances, and none appearing in 95% of total documents were extracted. 
+Texts with atleast 4 and 5 document appearances, tf and cv respectively, and none appearing in 95% of total documents were extracted. 
 
-My theory is that tf-idf will out perform count vectorized texts, causeee
+For both methods, only training sets were fitted, followed by transformation of training and testing sets. Fitting and transforming an all inclusive set would enable data leakage.
 
 ### Truncated SVD 
-Optional step:
 
-Applying truncated SVD onto sparse matrices, the outputs of tfidf and cv, is a conventional process known as latent semanatic analysis (LSA), simply because it "transforms the document-term/sparase matrices into a "semantic" space of lower dimensionality (ref @ url below), or in other words can explain the equivalent or similiar proportional variance that can be explained by the DTM matrices without TSVD, but with a reduced number of features(texts), due to being able to interpret values semantically.
+Truncated SVD was applied to text count/tf-idf sparse matrices - a conventional process known as latent semanatic analysis (LSA). The benefit of LSA is that it transforms the document-term/sparse matrices into a "semantic" space of lower dimensionality and uses singular value decomposition to find hidden or latent meanings through texts and docs; therefore, the proportional variance explained by the sparse matrices can be explained with less features(texts).
 
-* https://vitalv.github.io/projects/doc-clustering-topic-modeling.html <- reference; explains LSA as well as other info very well, highly recommend reading 
-
-With TSVD, the number of features were be able to reduce from 5000 to 812 for my CV training set, and 5000 to 1181 for TF training set. Reducing the number of features allowed for more efficient work to be done, by not having to wait on your comuter/notebook run.
+The number of features were reduced from 5000 to 812 for CV training set, and 5000 to 1181 for TF training set. 
 
         Initial Feature Training Set -->{(2380, 5000)}
         Initial Feature Testing Set -->{(596, 5000)}
@@ -74,56 +83,80 @@ With TSVD, the number of features were be able to reduce from 5000 to 812 for my
         Estimating number of components...
         1181 components needed to explain 95.0% variance.
         
-Normalization is also embedded within the function because while the outputs of TfIdf and Countvect, document term matrices, are normalized, LSA/SVD results are not. 
+The LSA outputs were normalized. Since, the outputs of TfIdf and Countvect are normalized, LSA/SVD results are not. 
 
- ### t-SNE Plots and Text Explorations
-t-SNE Plots of Tf-idf and CV training set data presented good and bad clusters. My assumption is that medical specialties classess possess values that are both specialized and portions of general medicine. The clusters that are far easier to distinguish from others characterize the specialized portion, while, the other portion becomes integrated with other generalized portions from other specialties, and, evidently, general medicine. So, prior to any classificaiton, I believe it will produce decent base metrics, however, hyperparameter tuning and other adjustments will be difficult to untangle this "generalized med portion". KNN Classifier, specifically, should output well for base model but I doubt there will be much increase by tuning.
+### t-SNE Plots and Text EDA
 
-The average text per transcription by medical specialty bar plot shows, surgical procedures Neurosurgery and orthopedic (often procedural based) are more explicit thus contain higher average of text per transcript. Having shadowed my uncle who is a Radiologist, I am not surprised that they rank lowest. Often, their dictations are succint and straight to the point.
+
+*
+From the barplot it is evident that mainly surgical/proecdural based classess, Orthopedics/Neurosurgery have higher text averages per transcription; this is most likely due to the preciceness and detailed nature required for documenting surgeries. And, Radiologist are at the bottom sinc e their field tends to vear towards more succint explanations/diagnoses of imaging scans and MRIs. 
+
+* Ironically, having shadowing experiences within these three fields, I believe I can, very slightly, attest to this speculation.
+
+Chi-squared tests were conducted to show correlated texts per class, and examine anuy discrepancies between countvectorized and tfidf values.
+
+t-SNE scatter plots of Tf-idf and CV training data were produced with metric 'cosine' .
+The visualizations provided very interesting insight into the allocation of medical class values on a 2-D plot. 
+
+Both tf-idf and cv plots showed positive signs of slightly uniform clusters for certain classes, however, there is also evidence a large area composed of overlapping values from different classes - mainly Cardiovascular/Pulmonary and General Medicine.
+
+Classifiers will most likely be able to fit the uniformed clusters fairly easily, but will face difficulties in distinguishing the central area comprised of various classes. 
+
 
 Word Clouds! Because everyone loves them.
-Unfortunately, although the word clouds do represent most common words, by frequency, it does not account for weights like idf. So, evidently, we get terms like "patient, left, right pain, procedur, etc..." that we often associate when it comes to medicine. 
+Word clouds show that most common terms are what most of us think when it comes to medicine/healthcare such as "patient, left, right pain, procedur, etc...".
 
-For further analysis, I performed chi-squared correlation on tfidf training set to output most correlated texts to their specialty by 1,2,3 grams. The correlated terms were very fitting and explained the unqiueness of its corresponding specialty.
 
-* I thought of using the chi-squred outputs to be used for resampling minority classes-assist in class imbalance, but I am not sure how much bias I would be introducing into the overall dataset, even though conventional resampling methods use existing terms, unlike SMOTE. This is something I will look more into.
 
 ## Baseline Modeling
-Finally, modeling!
 
-To obtain baseline results, I ran all classifiers at default settings.
-The reasons for the classifiers, I've chosen were mainly, after visuzliing t-SNE plot.
-My reasoning was that perhaps boosting and one vs rest (OVR) approach might hold the most promise in distinguishing the 'generalized blob'; and, that KNN will not be able to improve much more than its values at baseline due to to the nature of its alghoritm.
+All classifiers were set at default settings for baseline results.
 
-The scispaCy model did show metric improvements compared to pre-scispaCy metrics. And, considering the other functionalities the biomed sciscpaCy package contians, I assumme it is possible to improve metrics even further; for example, I did not convert medical abbreviations into words (MI = myocardialinfarction, BMI=bodymassindex, etc).
+After visuzliing t-SNE plot and estimating similiarties between several medical classes.
+I decided to use boosting and one vs rest (OVR) approach might have some promise in distinguishing the the main overlapping areas; KNN will not be able to improve much more than its values at baseline due to to the nature of its alghoritm.
 
-Tfif mean F1-Scores are higher than CV scores; and the inclusion of spaCy package seems to have very little effect to CV.
-However, when accounting for vectorization type, most of the CV models tend to outperform TF
+The scispaCy model did show higher metrics compared to pre-scispaCy metrics. And, considering the other functionalities the biomed sciscpaCy package contians, I assumme it is possible to improve metrics even further; for example, I did not convert medical abbreviations into words (MI = myocardialinfarction, BMI=bodymassindex, etc).
 
-TfIdf
-Stochastic Gradient Descent: unable to distinguish radiology and neurology well, otherwise robust
-One vs Rest Logistic Regression: strong in classifying classes with larger counts, weak in radiology
-Multinomial Logistic Regression: same as log reg OVR
-Linear Support Vector Classification OVR: very poor radiology nad neurology and neurosurgery, others strong
-Ada BoostedTrees: weak in generally all classes besides opthalmology and orthopedics
-but it is expected since max_depth =1
-K-Nearest Neighbors Classifier:strong in every category exceot radiology and neurosurgery
-Light GBM: very weak in radiology, neurology, hematology, nephrology, neurosurgery, otherwise robust
+Tfif mean F1-Scores are higher than CV scores.
+The inclusion of spaCy package seems to have very little effect on CV compared to tf.
 
-CV
-Stochastic Gradient Descent: very weak distinguishing radiology and neurology and neurosurgery
-One vs Rest Logistic Regression: strong in classifying classes with larger counts, weak in radiology
-Multinomial Logistic Regression: same as log reg OVR
-Linear Support Vector Classification OVR: very poor radiology and weak in neurology and neurosurgery, others strong
+*TfIdf Classification Reports 
+Stochastic Gradient Descent:
+Strength: Overall 
+Weakness: radiology and neurology
+One vs Rest Logistic Regression: 
+strong in classifying classes with larger counts, 
+weak in radiology
+Multinomial Logistic Regression: 
+same as log reg OVR
+Linear Support Vector Classification OVR: 
+very poor radiology nad neurology and neurosurgery,
+others strong
+Ada BoostedTrees: 
+weak in generally all classes besides opthalmology and orthopedics but it is expected since max_depth =1
+K-Nearest Neighbors Classifier:
+strong in every category exceot radiology and neurosurgery
+Light GBM: 
+very weak in radiology, neurology, hematology, nephrology, neurosurgery, otherwise robust
+
+*CV Classification Reports 
+Stochastic Gradient Descent: 
+very weak distinguishing radiology and neurology and neurosurgery
+One vs Rest Logistic Regression: 
+strong in classifying classes with larger counts, weak in radiology
+Multinomial Logistic Regression: 
+same as log reg OVR
+Linear Support Vector Classification OVR:
+very poor radiology and weak in neurology and neurosurgery, others strong
 Ada BoostedTrees: weak in general, but it is expected since max_depth =1
 K-Nearest Neighbors Classifier:strong in every category exceot radiology and neurosurgery
 Light GBM: very weak in radiology, neurology, hematology, nephrology, neurosurgery, otherwise robust
 
-Main issue: radiology and neurology/neurosurgery (going back to t-SNE plot, this is expected; generalmedicine did not pose as a big issue as I thought it would
+Main issue: radiology and neurology/neurosurgery (going back to t-SNE plot, this is expected; generalmedicine and cardiovascular/pulmonary were not as problematic as I presumed they would be. 
 
 ## Hyperparameter Tuning using GridSearchCV and RandomSearchCV with 5-fold stratified cross-validaiton
 
-Since, RandomSearchCV is much faster than brute force GridSearchCV for tuning hyperparameters, I used RandomSearchCV to narrow down optimal hyperparameters then followed up using GridSearch 5-fold CV (very long training time).
+RandomSearchCV is much faster than brute force GridSearchCV for tuning hyperparameters. Therefore using RandomSearchCV to narrow down optimal hyperparameters, I utilized GridSearchCV to confirm.
 
 For LightGBM, I used Optuna, a hyperparameter optimization framework, for finding optimal hyperparameters at learning rate of 0.01. It calculates number of estimators, feature_fraction, num_leaves,  To avoid overfitting, the final step employs several regularization methods to best adjust the multi_logloss. 
 
@@ -148,4 +181,10 @@ Including scispaCy's biomed package helped improve metrics for all classifiers w
 
 Neurology and Radiology both comprise of similiar procedures such as MRIs and CT scans, in addition to neuroradiology, a specialty that wasn't accounted for with this dataset.
 
-In conclusion, with these findings, I believe by implementing more text preprocessing methods such as conversion of medical jargon, acronyms, partitioning transcripts by common headers such as, "SUBJECTIVE, HISTORY, CHIEF COMPLAINT", and classifying based on those partitions; moreover, inclusion of more classes or breakdown of more class to have classes like "neuroradiology, interventional radiology, etc". And, of course more data. 
+In conclusion, with these findings, I believe by implementing more text preprocessing methods such as conversion of medical jargon, acronyms, partitioning transcripts by common headers such as, "SUBJECTIVE, HISTORY, CHIEF COMPLAINT", and classifying based on these subsets; moreover, inclusion of more classes or breakdown of more class to have classes like "neuroradiology, interventional radiology, etc". And, of course, always, more data. 
+
+
+## limitations
+However, I have not attempted downsampling  majority classess, simply due to having already dropped a great amount of data, but it may be possible to partition and reallocate 'surgery' data by identifying specialty-based procedures. 
+
+dropping
