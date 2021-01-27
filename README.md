@@ -1,4 +1,5 @@
-# Classification of 13 Medical Specialties Through Transcriptions Notes Using ScispaCy, CountVectorization, and Tf-Idf 
+# 
+Classification of   Medical Specialties Through Transcriptions Notes Using ScispaCy, CountVectorization, and Tf-Idf 
 
 ## Dataset
 Dataset retrieved from kaggle.com - originally from mtsamples.com
