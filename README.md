@@ -34,7 +34,7 @@ LightGBM Classifier
 ### Pre-Vectorization: Filtering Classes (Dependent Variable Groups)
 There are no missing values for medical_specialty and 0.66% missing for transcription, which were dropped.
 
-PLOT 
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img1.png)
 
 The figure shows evidence of very high class imbalance which will be an issue for classification. It also shows that 'Surgery' has far more transcripts than any other classes and a good amount of classes with very low transcripts.
 
@@ -46,7 +46,7 @@ Lastly, a threshold needs to be determined for having a certain number of transc
 
 In total, 13 unique medical specialties were selected for text preprocessing.
 
-FIGURE
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img2.png)
 
 * Note: I've attempted to salvage some of the lower classes by also using resampling techniques  SMOTE, ADASYN, SMOTEEN, and SMOTETOMEK, however, these methods were ineffective and only led to the addition of more noise. 
 
@@ -88,28 +88,44 @@ The LSA outputs were normalized. Since, the outputs of TfIdf and Countvect are n
 
 ### t-SNE Plots and Text EDA
 
-
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img3.png)
 *
 From the barplot it is evident that mainly surgical/proecdural based classess, Orthopedics/Neurosurgery have higher text averages per transcription; this is most likely due to the preciceness and detailed nature required for documenting surgeries. And, Radiologist are at the bottom sinc e their field tends to vear towards more succint explanations/diagnoses of imaging scans and MRIs. 
 
-* Ironically, having shadowing experiences within these three fields, I believe I can, very slightly, attest to this speculation.
+* Ironically, having shadowing experiences within these three fields, I can very slightly, to the absolute least attest to this.
+
+Diving deeper into to the preprocessed texts, I estimated the proportions of total processed texts per class.
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img4.png)
+
+* talk more moremroeoremroe
+
+Moreover, Word Clouds! Because everyone loves them.
+Word clouds show that most common terms are what most of us think when it comes to medicine/healthcare such as "patient, left, right pain, procedur, etc...".
+
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img5.png)
+
 
 Chi-squared tests were conducted to show correlated texts per class, and examine anuy discrepancies between countvectorized and tfidf values.
 
+
 t-SNE scatter plots of Tf-idf and CV training data were produced with metric 'cosine' .
 The visualizations provided very interesting insight into the allocation of medical class values on a 2-D plot. 
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img6.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img7.png)
 
 Both tf-idf and cv plots showed positive signs of slightly uniform clusters for certain classes, however, there is also evidence a large area composed of overlapping values from different classes - mainly Cardiovascular/Pulmonary and General Medicine.
 
 Classifiers will most likely be able to fit the uniformed clusters fairly easily, but will face difficulties in distinguishing the central area comprised of various classes. 
 
 
-Word Clouds! Because everyone loves them.
-Word clouds show that most common terms are what most of us think when it comes to medicine/healthcare such as "patient, left, right pain, procedur, etc...".
 
 
 
 ## Baseline Modeling
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img8.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img9.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img10.png)
+
 
 All classifiers were set at default settings for baseline results.
 
@@ -154,6 +170,9 @@ K-Nearest Neighbors Classifier:strong in every category exceot radiology and neu
 Light GBM: very weak in radiology, neurology, hematology, nephrology, neurosurgery, otherwise robust
 
 Main issue: radiology and neurology/neurosurgery (going back to t-SNE plot, this is expected; generalmedicine and cardiovascular/pulmonary were not as problematic as I presumed they would be. 
+## Baseline Results 
+
+
 
 ## Hyperparameter Tuning using GridSearchCV and RandomSearchCV with 5-fold stratified cross-validaiton
 
@@ -161,7 +180,9 @@ RandomSearchCV is much faster than brute force GridSearchCV for tuning hyperpara
 
 For LightGBM, I used Optuna, a hyperparameter optimization framework, for finding optimal hyperparameters at learning rate of 0.01. It calculates number of estimators, feature_fraction, num_leaves,  To avoid overfitting, the final step employs several regularization methods to best adjust the multi_logloss. 
 
-## Results
+## Final Results
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img11.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img12.png)
 Stochastic Gradient Descent Classifier with Tf-Idf vectorization produced highest F1-score, %. 
 
 Logistic Regression OVR 
@@ -176,7 +197,8 @@ Linear Support Vector Classifier: Countvectorized tuned model outperformed Tf-Id
 
 LightGBM Classifier: Tfidf tuned model produced highest
 AdaBoostedTree Classifier: Benefited greatly from hyperparameter tuning and produced a F1-score of 
-
+## Best Estimator - Stoachstic Gradident Descent - Tf-IDF/LSA
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img13.png)
 ## Conclusions
 Including scispaCy's biomed package helped improve metrics for all classifiers with the exception of KKN Clf. It would be interesting to look deeper into what other funcionalities it possess that can possibly improve classification rates even more. Initially, I hypothesized GeneralMedicine or Cardiovascular/pulmonary class to be the biggest obstacle for this project; since the nature of general medicine being more generalized would encompass factors that would overlap with other specialties and Cardiovascular/pulmonary, due to having the highest transcript count, as well as it being a medical field that has numerous associations with morbidities in other specilties. KNN clf, as I thought, was relatively consistent even without tuning, it was on par with other tuned models, since specialties would assumed to cluster as long as feature extraction worked properly; but there is an extent to KNN clf's capability to distinguish overlapping classes. As all classifiers did with radiology and neurology. Even SGD clf, the highest performing classifer, was only able to achieve an F1-score of 33%, but, Neurology did increase signficantly to 59%. 
 
