@@ -140,15 +140,15 @@ This distribution plot of IDF values is a good representation of where the terms
 ## Chi-Squared Tests - Correlated Terms by Class
 Chi-squared tests were conducted to show highest correlated texts for every class and examine the discrepancies between countvectorized and tfidf terms.
 
-==================================================================================================================================
-        ==> Cardiovascular/Pulmonary:
 
+        ==> Cardiovascular/Pulmonary:
+        
           * Most Correlated Tf-Idf Texts: 
         coronary, arteri, coronary arteri, circumflex, atrial
 
           * Most Correlated CountVectorized Texts: 
         coronary, arteri, pulmonary, coronary arteri, artery
-==================================================================================================================================
+
         ==> Neurology:
 
           * Most Correlated Tf-Idf Texts: 
@@ -156,7 +156,7 @@ Chi-squared tests were conducted to show highest correlated texts for every clas
 
           * Most Correlated CountVectorized Texts: 
         brain, temporal, gait, motor, seizur
-==================================================================================================================================
+
         ==> Urology:
 
           * Most Correlated Tf-Idf Texts: 
@@ -164,14 +164,15 @@ Chi-squared tests were conducted to show highest correlated texts for every clas
 
           * Most Correlated CountVectorized Texts: 
         bladder, testi, peni, prostate, scrotal
-==================================================================================================================================
+
         ==> GeneralMedicine:
+        
           * Most Correlated Tf-Idf Texts: 
         neg, subject, sugar, rate rhythm murmur, heent
         
           * Most Correlated CountVectorized Texts: 
         neg, histori, heent, auscult, procedur
-==================================================================================================================================
+
         ==> Radiology:
 
           * Most Correlated Tf-Idf Texts: 
@@ -179,7 +180,7 @@ Chi-squared tests were conducted to show highest correlated texts for every clas
 
           * Most Correlated CountVectorized Texts: 
         patient, imag, histori, exam, incis
-==================================================================================================================================
+
         ==> Orthopedic:
 
           * Most Correlated Tf-Idf Texts: 
@@ -187,7 +188,7 @@ Chi-squared tests were conducted to show highest correlated texts for every clas
 
           * Most Correlated CountVectorized Texts: 
         knee, screw, medial, joint, tendon
-==================================================================================================================================
+
         ==> Obstetrics/Gynecology:
 
           * Most Correlated Tf-Idf Texts: 
@@ -195,7 +196,7 @@ Chi-squared tests were conducted to show highest correlated texts for every clas
 
           * Most Correlated CountVectorized Texts: 
         uteru, cervix, uterine, fetal, vaginal
-==================================================================================================================================
+
         ==> Nephrology:
 
           * Most Correlated Tf-Idf Texts: 
@@ -203,7 +204,7 @@ Chi-squared tests were conducted to show highest correlated texts for every clas
 
           * Most Correlated CountVectorized Texts: 
         renal, kidney, renal mass, transplant, renal diseas
-==================================================================================================================================
+
         ==> Hematology-Oncology:
 
           * Most Correlated Tf-Idf Texts: 
@@ -211,7 +212,7 @@ Chi-squared tests were conducted to show highest correlated texts for every clas
 
           * Most Correlated CountVectorized Texts: 
         cell, carcinoma, basal cell, basal cell carcinoma, lymphoma
-==================================================================================================================================
+
         ==> Gastroenterology:
 
           * Most Correlated Tf-Idf Texts: 
@@ -219,7 +220,7 @@ Chi-squared tests were conducted to show highest correlated texts for every clas
 
           * Most Correlated CountVectorized Texts: 
         colon, gallbladd, duct, cecum, colonoscopi
-==================================================================================================================================
+
         ==> ENT-Otolaryngology:
 
           * Most Correlated Tf-Idf Texts: 
