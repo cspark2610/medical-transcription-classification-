@@ -1,12 +1,20 @@
-## Objective: Compare different combinations of approaches to classify medical specialties via medical transcript notes through employing CountVectorization, TF-IDF, and scispaCy's biomedical NLP package.
+# Text Classifcation using CountVectorization, TF-IDF, scispaCy
 
-### Dataset
-Dataset being used for this project is originally from mtsamples.com, which contains 500 rows of de-identified medical information and 40 medical specialty classes.
-It also includes descriptions, sample names, and keywords; however we will not be using them for this project.
+* Dataset: de-identified public source medical data from mtsamples.com
+** Dataset details: contains 500 rows of de-identified medical information and 40 unique medical specialty classes, and also includes descriptions, sample names, and keywords; however we will only use "medical_specialty" and "transcription" columns for this project
 
-## START
+## Approach:
 
-Starting off, I extracted "medical_specialty" and "transcription" columns and removed missing values of only 0.66%.
+## Objective: Classify medical transcript notes into predefined medical specialties 
+### Classification Algorithms:
+*Stochastic Gradient Descent Classifier OVR
+*Logistic Regression Multinomial and OVR
+*AdaBoosted Decision Trees Classifier
+*Linear Support Vector Classifier OVR
+*K-Nearest Neighbors Classifier
+*LightGBM Classifier 
+
+Starting off, I extracted  and removed missing values of only 0.66%.
 The 40 unique classes contained within the "medical_specialty" variable are:
 
                 ['Allergy/Immunology' 'Bariatrics' 'Cardiovascular/Pulmonary' 'Neurology'
