@@ -1,18 +1,24 @@
 # Text Classifcation using CountVectorization, TF-IDF, scispaCy
 
 * Dataset: de-identified public source medical data from mtsamples.com
-** Dataset details: contains 500 rows of de-identified medical information and 40 unique medical specialty classes, and also includes descriptions, sample names, and keywords; however we will only use "medical_specialty" and "transcription" columns for this project
+* Dataset details: contains 500 rows of de-identified medical information and 40 unique medical specialty classes, and also includes descriptions, sample names, and keywords; however we will only use "medical_specialty" and "transcription" columns for this project
 
-## Approach:
+## Approach
+plann
+
 
 ## Objective: Classify medical transcript notes into predefined medical specialties 
+
+
 ### Classification Algorithms:
-*Stochastic Gradient Descent Classifier OVR
-*Logistic Regression Multinomial and OVR
-*AdaBoosted Decision Trees Classifier
-*Linear Support Vector Classifier OVR
-*K-Nearest Neighbors Classifier
-*LightGBM Classifier 
+* Stochastic Gradient Descent Classifier OVR
+* Logistic Regression Multinomial and OVR
+* AdaBoosted Decision Trees Classifier
+* Linear Support Vector Classifier OVR
+* K-Nearest Neighbors Classifier
+* LightGBM Classifier 
+
+
 
 Starting off, I extracted  and removed missing values of only 0.66%.
 The 40 unique classes contained within the "medical_specialty" variable are:
