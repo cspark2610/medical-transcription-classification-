@@ -377,7 +377,7 @@ Stochastic Gradient Descent Classifier with Tf-Idf vectorization produced highes
 
 Next plot shows comparisons of LSA+scispaCy and LSA. In reality, the LSA model doesn't show much differences with the firsplt against raw values.tf-idf LSA spaCy continues to remain dominant ins highest f1 sorees all around.
 
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img15.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img16.png)
 
 This plot confirms that, in spite of which preprocessing method used for feature extraction, tf-idf produces higher scores on average than countvectorization.
 
