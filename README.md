@@ -1,4 +1,4 @@
-# Text Classifcation using CountVectorization, TF-IDF, scispaCy
+# Text Classifcation using CountVectorization, TF-IDF, scispaCy and Methodology Assessment on Improving Medical Specialty Classification Thru Transcription Notes
 
 * Dataset: de-identified public source medical data from mtsamples.com
 * Dataset details: contains 500 rows of de-identified medical information and 40 unique medical specialty classes, and also includes descriptions, sample names, and keywords.
