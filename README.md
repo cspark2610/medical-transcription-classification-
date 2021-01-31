@@ -38,7 +38,27 @@ We will be using the following seven classifiers.
 
 I selected classifers with a primary focus on OVR classifers, since we have a large number of classes; perhaps, OVR can mitigate this issue by collapsing the classification process by piecemeal; OVR, or also goes by OVA (one vs all), sets one class against the others classes as a unified class, thereby simplifying the problem into multiple binary classifications. It is a promising approach rather than attempting to classify all targets at once. Boosters were selected cause I hoped that in the case where there are strong overlaps between neighboring classes, the boosting ability will adjust weights accordingly from pre classified and misclassified cases - which would be optimal. KNN classifier, I included, not particularly for classification score purposes, but more of an interest into how complex or overfit nearest neighbor alghorithm can extend to within domains and datasets such as medical notes. 
 
-### 
+### Approach
+1. Begin by spliting dataset into training and testing sets (test size @ 20%)
+
+2. Construct text preprocessing functions:
+
+    a. Lowercase, remove punctuations/stopwords/special chars/digits/whitespace, lemmatize and stem words and remove any terms with less than 2 chars.
+
+    b. Second function follows same procedures but includes scispaCy's en_core_sm biomed package to assist in extracting biomedical terminology.
+
+    c. Input preprocessing function into CountVec and TF-IDF's 'preprocessing' param.
+    
+    d. Comapare classification reports later on.
+ 
+3. Feature extraction of texts using CountVectorization and TF-IDF. Both parameters were set
+at max 5000 features, inclusion of uni/bi/trigrams. Removes terms occuring upyo 95% of transcriptions as well as a a threshold for being present in 4,5 docs/transcripts for tf-idf and CV, respectively.
+
+
+4. Apply Truncated SVD onto ONLY training sets then transform test and train sets using this fitted vector - otherwise enables data leakage and inflation of metrics. Set a proportional variance percentage you would like to have explained of original set by reduced features (from 'k' number of singular vector decomposition' - beyond scope to go into details). This is a commonly used combination of textfeature extraction with TSVD, it is known as LSA or latent semantic analsys.
+
+### Import dataset and packages
+
 Starting off, extract our two columns, transcription and medical specialy, and then check and remove missing values, which happened to only be 0.66%.
 Our dependent or target variable consists of 40 unique classes:
 
@@ -130,7 +150,7 @@ Another note to mention is that while the output matrices of CV and TF-IDF are n
 Lastly, the biggest hurdle, in my opinion, for performing TSVD is to find the appropriate number of estimators that can explain our desired proportional variance. 
 So, with the help of a helper function for calculating the amount of estimators needed, our TSVD function is ready to transform, normalize, and output your desired proportional variance (I selected 95%).
 
-## EDA and t-SNE visualizaiton
+### EDA and t-SNE visualizaiton
 Now that we have preprocessed our transcripts, I'd like to calculate the mean number of 'cleaned' words for each class. 
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img3.png)
@@ -157,10 +177,42 @@ However, despite what you think, I didn't only construct the wordcloud for the e
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img14.png)
 
-You can plainly see that the most common words, the largest words in the wordcloud, now appear in the lowest ranking for IDF. Having taken account to inverse document frequency, popular terms can vary quite dramatically such as in our case, which is a great example of the differences of the two vectorization methods. 
+The IDF distribution plot is negatively skewed, but not largely, and texts were annotated across ranging IDF values (every 250th term between 0 to 5000) demcarcated by their X position. It may not be obvious but the terms become more sophisticated as the IDF and X axis position increases. The term 'patient' and 'recovery room satisfactory' are the lowest and highest annotated text on the distribution plot and it is notable that bigrams and trigrams become more present as the IDF increases.
+
+                  Features with lowest idf:
+                  ===========================================================================
+                  ['patient' 'right' 'left' 'year' 'procedur' 'diagnosi' 'histori' 'blood'
+                   'pain' 'room' 'postop' 'posit' 'preoper' 'anesthesia' 'preoper diagnosi'
+                   'skin' 'prep' 'drape' 'examin' 'postop diagnosi' 'condit' 'exam' 'normal'
+                   'prep drape' 'day']
+
+                  Features with highest idf:
+                  ===========================================================================
+                  ['huntington' 'superfici femoral arteri' 'medial malleolu' 'limit lesion'
+                   'colostomi' 'neural foraminal stenosi' 'fenestr' 'fistulogram'
+                   'superfici femoral' 'glenn']
+
+                  Features with lowest tfidf:
+                  ===========================================================================
+                  ['vascular statu' 'foot prep' 'foot prep drape' 'stabl vascular statu'
+                   'stabl vascular' 'sign stabl vascular' 'superiorli inferiorli'
+                   'retaining retractor' 'retaining' 'modified' 'stenosi right'
+                   'muscl separ' 'procedur anesthesia' 'year caucasian femal' 'vesicouterin'
+                   'left fallopian' 'constant' 'dissection' 'mention' 'muscl separ midlin'
+                   'separ midlin' 'incis subcutaneous' 'general endotrach'
+                   'incis subcutaneous tissu' 'incis level']
+
+                  Features with highest tfidf:
+                  ===========================================================================
+                  ['arterial' 'biliary' 'reason visit' 'ica' 'capac' 'motor unit' 'ice'
+                   'tonsil' 'angiogram' 'tremor' 'eclampsia' 'vestibular' 'cataract' 'sleep'
+                   'temporal' 'fetal' 'reason' 'epicondyl' 'instil' 'seed' 'cholelithiasi'
+                   'neg' 'suit' 'indic' 'subject']
+
+You can plainly see that the most common words, the largest words in the wordcloud, now appear to be in the lowest ranking for IDF. Having taken account to inverse document frequency, popular terms can vary quite dramatically such as in our case, which is a great example of the differences of the two vectorization methods. 
 High IDF terms such as Huntington's is a word that can significnatly help classify its' corresponding class (neurology?), something that the word 'patient' cannot do.
 
-Now onto my personal favorite, t-SNE plots. It is a tremendously benefical way to visualize high dimensional data into 2-D scatter plots. I've tuned the perplexity, learning rate, and exaggeration to try to display the most interpretable plot. I was half way successful. For both plots, mostly tf-idf, there is clearly evidence of clusters which is a good sign for classifcation; however, a few are a bit concerning that contain more than one class embedded within a single cluster. The general epicenter of overlaps, where "general medicine" lies, seems to be challenging since a little of every class has some value integrated within this area. I am hopeful that it will not crush our classification metrics. 
+Now onto my personal favorite, t-SNE plots. It is a tremendously benefical way to visualize high dimensional data into 2-D scatter plots. I've tuned the perplexity, learning rate, and exaggeration to try to display the most interpretable plot. I was half way successful. For both plots, mostly tf-idf, there is clearly evidence of clusters which is a good indication for classifcation; however, a few clusters are a bit concerning, particularly, the clusters that contain more than one class embedded classes within a single cluster such as Orthopedics and Neurosurgery, and Radiology with several classes. The general epicenter of overlaps, where "general medicine" can be found, seems to be a challenge, since a little of every class has some value integrated within this area. I am hopeful that it will not crush our classification metrics. 
 
 
 Final note, t-SNE was produced using cosine metric.
@@ -173,56 +225,143 @@ Final note, t-SNE was produced using cosine metric.
 
 
 ## Baseline Modeling
-Now we will get our baseline metrics by training models at default hyperparameters using our seven classifiers:
-*Stochastic Gradient Descent Classifier
-*Multinomial Logistic Regression
-*Logistic Regression OVR
-*AdaBoosted Decision Trees Classifier
-*Linear Support Vector Classifier OVR
-*K-Nearest Neighbors Classifier
-*LightGBM Classifier 
+Now we will get our baseline metrics by training our seven models at default hyperparameters:
+Classification Algorithms:
+* Stochastic Gradient Descent Classifier OVR
+* Multinomial Logistic Regression  and OVR
+* Logistic Regression OVR
+* AdaBoosted Decision Trees Classifier
+* Linear Support Vector Classifier OVR
+* K-Nearest Neighbors Classifier
+* LightGBM Classifier 
 
 
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img8.png)
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img9.png)
 
-So, from our results it is quite evident that all three preprocessing approaches are fairly even. Adaboosted Trees is lowest, but that is to be expected, since it uses slow learners to amplify its classification efficiency. Both logistic regression models produced the highest F1 scores, I commend the robustness of LR. Lastly, we can see that Tf-Idf tends to outperform CountVect in most models. We will have to do quite a bit of tuning to improve our scores.
+So, from our results it is quite evident that all three preprocessing methods are fairly even in scoring. Adaboosted Trees are lowest, but that is to be expected, since it uses slow learners to amplify its classification ability. Both logistic regression models produced the highest F1 scores; I commend the robustness of LR. We can see that Tf-Idf tends to outperform CountVect in most baseline models. 
+Yet still, there we be a bit of tuning to improve our scores. It is not obvious here but from a few classification reports for baseline classes, Radiology and Neurology seem to be the most problematic classes. I see it as an issue sinc etheir support levels indicate that both classes are fairly high, so I cannot assume the poor metrtics on sample size. But something has to be done to improve these scores.
 
+        ===========================================================================
+        Classification Report - SGDClassifier
+        ===========================================================================
+                                  precision    recall  f1-score   support
 
-  *TfIdf Classification Reports 
-  Stochastic Gradient Descent:
-  Strength: Overall 
-  Weakness: radiology and neurology
-  One vs Rest Logistic Regression: 
-  strong in classifying classes with larger counts, 
-  weak in radiology
-  Multinomial Logistic Regression: 
-  same as log reg OVR
-  Linear Support Vector Classification OVR: 
-  very poor radiology nad neurology and neurosurgery,
-  others strong
-  Ada BoostedTrees: 
-  weak in generally all classes besides opthalmology and orthopedics but it is expected since max_depth =1
-  K-Nearest Neighbors Classifier:
-  strong in every category exceot radiology and neurosurgery
-  Light GBM: 
-  very weak in radiology, neurology, hematology, nephrology, neurosurgery, otherwise robust
+        Cardiovascular/Pulmonary       0.67      0.58      0.62        74
+              ENT-Otolaryngology       0.83      0.79      0.81        19
+                Gastroenterology       0.69      0.73      0.71        45
+                 GeneralMedicine       0.58      0.63      0.61        52
+             Hematology-Oncology       0.40      0.33      0.36        18
+                      Nephrology       0.38      0.31      0.34        16
+                       Neurology       0.26      0.22      0.24        45
+                    Neurosurgery       0.26      0.26      0.26        19
+           Obstetrics/Gynecology       0.69      0.81      0.75        31
+                   Ophthalmology       0.94      0.94      0.94        16
+                      Orthopedic       0.62      0.68      0.65        71
+                       Radiology       0.07      0.07      0.07        55
+                         Urology       0.76      0.84      0.80        31
 
-  *CV Classification Reports 
-  Stochastic Gradient Descent: 
-  very weak distinguishing radiology and neurology and neurosurgery
-  One vs Rest Logistic Regression: 
-  strong in classifying classes with larger counts, weak in radiology
-  Multinomial Logistic Regression: 
-  same as log reg OVR
-  Linear Support Vector Classification OVR:
-  very poor radiology and weak in neurology and neurosurgery, others strong
-  Ada BoostedTrees: weak in general, but it is expected since max_depth =1
-  K-Nearest Neighbors Classifier:strong in every category exceot radiology and neurosurgery
-  Light GBM: very weak in radiology, neurology, hematology, nephrology, neurosurgery, otherwise robust
+                        accuracy                           0.54       492
+                       macro avg       0.55      0.55      0.55       492
+                    weighted avg       0.54      0.54      0.54       492
 
-  Main issue: radiology and neurology/neurosurgery (going back to t-SNE plot, this is expected; generalmedicine and cardiovascular/pulmonary were not as problematic    as I presumed they would be. 
+        ===========================================================================
+        Classification Report - LogisticRegression_OvR
+        ===========================================================================
+                                  precision    recall  f1-score   support
+
+        Cardiovascular/Pulmonary       0.63      0.74      0.68        74
+              ENT-Otolaryngology       0.93      0.68      0.79        19
+                Gastroenterology       0.78      0.64      0.71        45
+                 GeneralMedicine       0.51      0.81      0.63        52
+             Hematology-Oncology       0.50      0.06      0.10        18
+                      Nephrology       0.67      0.25      0.36        16
+                       Neurology       0.55      0.49      0.52        45
+                    Neurosurgery       0.33      0.21      0.26        19
+           Obstetrics/Gynecology       0.71      0.77      0.74        31
+                   Ophthalmology       1.00      0.88      0.93        16
+                      Orthopedic       0.65      0.85      0.74        71
+                       Radiology       0.20      0.15      0.17        55
+                         Urology       0.81      0.81      0.81        31
+
+                        accuracy                           0.61       492
+                       macro avg       0.64      0.56      0.57       492
+                    weighted avg       0.60      0.61      0.59       492
+
+        ===========================================================================
+        Classification Report LogisticRegression_Multinomial 
+        ===========================================================================
+                                  precision    recall  f1-score   support
+        Cardiovascular/Pulmonary       0.65      0.69      0.67        74
+              ENT-Otolaryngology       0.93      0.68      0.79        19
+                Gastroenterology       0.76      0.64      0.70        45
+                 GeneralMedicine       0.51      0.77      0.61        52
+             Hematology-Oncology       0.75      0.17      0.27        18
+                      Nephrology       0.67      0.25      0.36        16
+                       Neurology       0.53      0.47      0.49        45
+                    Neurosurgery       0.38      0.32      0.34        19
+           Obstetrics/Gynecology       0.71      0.77      0.74        31
+                   Ophthalmology       1.00      0.88      0.93        16
+                      Orthopedic       0.65      0.82      0.72        71
+                       Radiology       0.19      0.16      0.17        55
+                         Urology       0.84      0.84      0.84        31
+
+                        accuracy                           0.61       492
+                       macro avg       0.66      0.57      0.59       492
+                    weighted avg       0.61      0.61      0.59       492
+
+        ===========================================================================
+        Classification Report LinearSVC
+        ===========================================================================
+
+                                  precision    recall  f1-score   support
+
+        Cardiovascular/Pulmonary       0.68      0.61      0.64        74
+              ENT-Otolaryngology       0.83      0.79      0.81        19
+                Gastroenterology       0.73      0.73      0.73        45
+                 GeneralMedicine       0.60      0.69      0.64        52
+             Hematology-Oncology       0.43      0.33      0.38        18
+                      Nephrology       0.42      0.31      0.36        16
+                       Neurology       0.28      0.22      0.25        45
+                    Neurosurgery       0.26      0.26      0.26        19
+           Obstetrics/Gynecology       0.69      0.77      0.73        31
+                   Ophthalmology       0.94      0.94      0.94        16
+                      Orthopedic       0.61      0.68      0.64        71
+                       Radiology       0.07      0.07      0.07        55
+                         Urology       0.79      0.84      0.81        31
+
+                        accuracy                           0.55       492
+                       macro avg       0.56      0.56      0.56       492
+                    weighted avg       0.55      0.55      0.55       492
+
+        ===========================================================================
+        Classification Report KNeighborsClassifier 
+        ===========================================================================
+
+                                  precision    recall  f1-score   support
+
+        Cardiovascular/Pulmonary       0.59      0.72      0.65        74
+              ENT-Otolaryngology       0.78      0.74      0.76        19
+                Gastroenterology       0.78      0.69      0.73        45
+                 GeneralMedicine       0.55      0.58      0.56        52
+             Hematology-Oncology       0.47      0.39      0.42        18
+                      Nephrology       0.50      0.44      0.47        16
+                       Neurology       0.44      0.47      0.45        45
+                    Neurosurgery       0.29      0.21      0.24        19
+           Obstetrics/Gynecology       0.77      0.87      0.82        31
+                   Ophthalmology       1.00      0.94      0.97        16
+                      Orthopedic       0.63      0.73      0.68        71
+                       Radiology       0.19      0.13      0.15        55
+                         Urology       0.76      0.71      0.73        31
+
+                        accuracy                           0.59       492
+                       macro avg       0.59      0.58      0.59       492
+                    weighted avg       0.57      0.59      0.58       492
+ 
+
+  
+* Main issue: radiology and neurology/neurosurgery (going back to t-SNE plot, this is expected; generalmedicine and cardiovascular/pulmonary were not as problematic    as I presumed they would be. 
 
 ## Hyperparameter Tuning using GridSearchCV and RandomSearchCV with 5-fold stratified cross-validaiton
 
@@ -231,35 +370,95 @@ For hyperparameter tuning, I combined the two functions, RandomSearchCV and Grid
 For LightGBM, I used Optuna, which is a hyperparameter optimization framework, for finding optimal hyperparameters at a learning rate, 0.01, that I decided on. How optuna works is that it sequentially calculates number of estimators, feature_fraction, num_leaves, among other hyperparameters in set order, and leaves regularizing for the final step. For our case, since it is multi-class and not binary we will set our loss metric, multi_logloss. 
 
 ## Final Results
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img11.png)
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img12.png)
+
+The plot is between LSA+scispaCy and LSA models, so in theory, it should display the most discrepency of scispaCy's impact on metrics. 
+Stochastic Gradient Descent Classifier with Tf-Idf vectorization produced highest F1-score, 69.1%. And LSA_spaCy tends to out perform in every model. 
+
+Next plot shows comparisons of LSA+scispaCy and LSA. In reality, the LSA model doesn't show much differences with the firsplt against raw values.tf-idf LSA spaCy continues to remain dominant ins highest f1 sorees all around.
+
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img15.png)
 
-Stochastic Gradient Descent Classifier with Tf-Idf vectorization produced highest F1-score, %. 
-
-Logistic Regression OVR 
-
-Multinomial Logistic Regression came close at second best score, %.
+This plot confirms that, in spite of which preprocessing method used for feature extraction, tf-idf produces higher scores on average than countvectorization.
 
 
+Multinomial Logistic Regression came close at second with a final F1-score of 67% but SGD is definitively the best estimator.
 
-Tf-Idf produced higher F1-scores 
 
-Linear Support Vector Classifier: Countvectorized tuned model outperformed Tf-Idf models.
-
-LightGBM Classifier: Tfidf tuned model produced highest
-AdaBoostedTree Classifier: Benefited greatly from hyperparameter tuning and produced a F1-score of 
 ## Best Estimator - Stoachstic Gradident Descent - Tf-IDF/LSA
+
+Final look into SGD TF-IDF LSA_scispaCy model.
+
+Base LSA Tf-Idf SGD Model Classification report:
+===========================================================================
+                          precision    recall  f1-score   support
+
+Cardiovascular/Pulmonary       0.65      0.57      0.60        74
+      ENT-Otolaryngology       0.73      0.84      0.78        19
+        Gastroenterology       0.62      0.76      0.68        45
+         GeneralMedicine       0.62      0.60      0.61        52
+     Hematology-Oncology       0.44      0.39      0.41        18
+              Nephrology       0.44      0.25      0.32        16
+               Neurology       0.21      0.13      0.16        45
+            Neurosurgery       0.27      0.32      0.29        19
+   Obstetrics/Gynecology       0.69      0.81      0.75        31
+           Ophthalmology       0.94      0.94      0.94        16
+              Orthopedic       0.62      0.69      0.65        71
+               Radiology       0.05      0.05      0.05        55
+                 Urology       0.76      0.84      0.80        31
+
+                accuracy                           0.54       492
+               macro avg       0.54      0.55      0.54       492
+            weighted avg       0.52      0.54      0.53       492
+
+===========================================================================
+Best Estimator - Stochastic Gradient Descent Classifier LSA Tf-IDF
+===========================================================================
+Parameters:
+SGDClassifier(alpha=0.001, class_weight='balanced', eta0=0.01, l1_ratio=0.8,
+              learning_rate='adaptive', loss='modified_huber',
+              n_iter_no_change=10, n_jobs=-1, penalty='l1', power_t=0.01,
+              random_state=123)
+
+===========================================================================
+Classification Report
+===========================================================================
+                          precision    recall  f1-score   support
+
+Cardiovascular/Pulmonary       0.77      0.66      0.71        74
+      ENT-Otolaryngology       0.85      0.89      0.87        19
+        Gastroenterology       0.86      0.71      0.78        45
+         GeneralMedicine       0.58      0.67      0.63        52
+     Hematology-Oncology       0.48      0.67      0.56        18
+              Nephrology       0.46      0.69      0.55        16
+               Neurology       0.57      0.60      0.59        45
+            Neurosurgery       0.48      0.84      0.62        19
+   Obstetrics/Gynecology       0.77      0.87      0.82        31
+           Ophthalmology       0.94      0.94      0.94        16
+              Orthopedic       0.79      0.77      0.78        71
+               Radiology       0.48      0.24      0.32        55
+                 Urology       0.82      0.90      0.86        31
+
+                accuracy                           0.68       492
+               macro avg       0.68      0.73      0.69       492
+            weighted avg       0.69      0.68      0.68       492
+ 
+
+Other than the high F1-score, it is great to see that Radiology increased from 5% to 32% and Neurology increased from 16% to 59%. I would conclude that thru tuning SGD was really able to maximize its' potential. 
+
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img13.png)
+
+The confusion matrix displays count and F1-Score for that class. While, Radiology had lowest F1-score, the improvement from its base model is significant.
+
 ## Conclusions
-Including scispaCy's biomed package helped improve metrics for all classifiers with the exception of KKN Clf. It would be interesting to look deeper into what other funcionalities it possess that can possibly improve classification rates even more. Initially, I hypothesized GeneralMedicine or Cardiovascular/pulmonary class to be the biggest obstacle for this project; since the nature of general medicine being more generalized would encompass factors that would overlap with other specialties and Cardiovascular/pulmonary, due to having the highest transcript count, as well as it being a medical field that has numerous associations with morbidities in other specilties. KNN clf, as I thought, was relatively consistent even without tuning, it was on par with other tuned models, since specialties would assumed to cluster as long as feature extraction worked properly; but there is an extent to KNN clf's capability to distinguish overlapping classes. As all classifiers did with radiology and neurology. Even SGD clf, the highest performing classifer, was only able to achieve an F1-score of 33%, but, Neurology did increase signficantly to 59%. 
+Including scispaCy's biomed package helped improve F1 scores for all classifiers with the exception of KKN Clf. It would be interesting to look deeper into what other funcionalities it possesses that can possibly be used to improve classification rates. Initially, I theorized GeneralMedicine and Cardiovascular/pulmonary class to be the biggest obstacle for this project; since the nature of general medicine being more generalized would encompass factors that  overlap with other specialties and Cardiovascular/pulmonary, for it having the highest transcript count as well as it being a specialty that has numerous morbidity associations with other class diseases. All classifiers had difficulties in distinguishing and classifying radiology and neurology. Even SGD clf, the highest performing classifer, was only able to achieve an F1-score of 33%, although, Neurology did increase significantly to 59%. 
 
-Neurology and Radiology both comprise of similiar procedures such as MRIs and CT scans, in addition to neuroradiology, a specialty that wasn't accounted for with this dataset.
+In conclusion, I believe the reason why Radiology and Neurology had been scoring low for all classifiers is that neuroradiology, within in its' own right, is an estanlished subspecialty of radiology and is widely recognized by medical entitities. Moreover, radiologists are all not the same, there are several branches of radiology that specialize and manifest in entirely different ways, such as neuroradiology, as I've mentioned, as well as interventional radiology. These subspecialties are well established and utilized in many hospitals, so I strongly believe that if we were able to obtain data for a neuroradiology class, the F1 scores for all classifers would significantly improve. However, these are just my opinions and theory, but the findings are salient and vears me towards that direction. 
 
-In conclusion, with these findings, I believe by implementing more text preprocessing methods such as conversion of medical jargon, acronyms, partitioning transcripts by common headers such as, "SUBJECTIVE, HISTORY, CHIEF COMPLAINT", and classifying based on these subsets; moreover, inclusion of more classes or breakdown of more class to have classes like "neuroradiology, interventional radiology, etc". And, of course, always, more data. 
+I hope you found some insight through this project and thank you for reading it.
 
+## Limitations and future options
+I have not attempted downsampling majority classess, which may have improved scores, simply due to having a great deal of data loss from dropping surgery.
+But, I believe surgery can be partitioned by procedural type and reallocate the data to make good use of it. 
 
-## limitations
-However, I have not attempted downsampling  majority classess, simply due to having already dropped a great amount of data, but it may be possible to partition and reallocate 'surgery' data by identifying specialty-based procedures. 
-
-dropping
+Moreover, I believe implementing a more sophisticated text preprocessing method by addition of conversion of medical jargon, acronyms, and partitioning transcripts by common headers such as, "SUBJECTIVE, HISTORY, CHIEF COMPLAINT", can lead to more insight and similiarities in data structure. And, lastly, but not the very least, more data is always welcome. 
