@@ -1,4 +1,5 @@
-# Text Classifcation using CountVectorization, TF-IDF, scispaCy and Methodology Assessment on Improving Medical Specialty Classification Thru Transcription Notes
+# Medical Specialty Text Classification of Transcription Notes using CountVectorization, TF-IDF, scispaCy's Biomedical NLP Package
+#  and Methodology Assessment for Improving Classification Performances.
 
 * Dataset: de-identified public source medical data from mtsamples.com
 * Dataset details: contains 500 rows of de-identified medical information and 40 unique medical specialty classes, and also includes descriptions, sample names, and keywords.
@@ -179,35 +180,84 @@ However, despite what you think, I didn't only construct the wordcloud for the e
 
 The IDF distribution plot is negatively skewed, but not largely, and texts were annotated across ranging IDF values (every 250th term between 0 to 5000) demcarcated by their X position. It may not be obvious but the terms become more sophisticated as the IDF and X axis position increases. The term 'patient' and 'recovery room satisfactory' are the lowest and highest annotated text on the distribution plot and it is notable that bigrams and trigrams become more present as the IDF increases.
 
-                  Features with lowest idf:
-                  ===========================================================================
-                  ['patient' 'right' 'left' 'year' 'procedur' 'diagnosi' 'histori' 'blood'
-                   'pain' 'room' 'postop' 'posit' 'preoper' 'anesthesia' 'preoper diagnosi'
-                   'skin' 'prep' 'drape' 'examin' 'postop diagnosi' 'condit' 'exam' 'normal'
-                   'prep drape' 'day']
+* Text preprocessing function with scispaCy (+spacy)
+* Text preprocessing function without scispaCy (-spacy)
 
-                  Features with highest idf:
-                  ===========================================================================
-                  ['huntington' 'superfici femoral arteri' 'medial malleolu' 'limit lesion'
-                   'colostomi' 'neural foraminal stenosi' 'fenestr' 'fistulogram'
-                   'superfici femoral' 'glenn']
-
-                  Features with lowest tfidf:
-                  ===========================================================================
-                  ['vascular statu' 'foot prep' 'foot prep drape' 'stabl vascular statu'
-                   'stabl vascular' 'sign stabl vascular' 'superiorli inferiorli'
-                   'retaining retractor' 'retaining' 'modified' 'stenosi right'
-                   'muscl separ' 'procedur anesthesia' 'year caucasian femal' 'vesicouterin'
-                   'left fallopian' 'constant' 'dissection' 'mention' 'muscl separ midlin'
-                   'separ midlin' 'incis subcutaneous' 'general endotrach'
-                   'incis subcutaneous tissu' 'incis level']
-
-                  Features with highest tfidf:
-                  ===========================================================================
-                  ['arterial' 'biliary' 'reason visit' 'ica' 'capac' 'motor unit' 'ice'
-                   'tonsil' 'angiogram' 'tremor' 'eclampsia' 'vestibular' 'cataract' 'sleep'
-                   'temporal' 'fetal' 'reason' 'epicondyl' 'instil' 'seed' 'cholelithiasi'
-                   'neg' 'suit' 'indic' 'subject']
+                
+                +spacy Features with lowest idf:
+                ===========================================================================
+                ['patient' 'right' 'left' 'year' 'procedur' 'diagnosi' 'histori' 'blood'
+                'pain' 'room' 'postop' 'posit' 'preoper' 'anesthesia' 'preoper diagnosi'
+                'skin' 'prep' 'drape' 'examin' 'postop diagnosi' 'condit' 'exam' 'normal'
+                'prep drape' 'day']
+                ============================================================================
+                -spacy Features with lowest idf:
+                ===========================================================================
+                ['patient' 'right' 'left' 'normal' 'year' 'use' 'old' 'year old' 'place'
+                'blood' 'time' 'procedur' 'procedure' 'pain' 'present' 'room' 'histori'
+                'follow' 'postop' 'anesthesia' 'skin' 'preoper' 'prep' 'note' 'posit']
+                   
+                Feature Differences: Count = 9
+                Feature Shared: Count = 16
+                
+                
+                +spaCy Features with highest idf:
+                ===========================================================================
+                ['huntington' 'superfici femoral arteri' 'medial malleolu' 'limit lesion'
+                'colostomi' 'neural foraminal stenosi' 'fenestr' 'fistulogram'
+                'superfici femoral' 'glenn']
+                ===========================================================================
+                -spaCy Features with highest idf:
+                ===========================================================================
+                ['comfort', 'vision', 'report correct', 'satisfactori', 'admiss', 'abc', 
+                'restrict', 'lung', 'social', 'univers']
+                ===========================================================================
+                    Feature Differences: Count = 1
+                    Feature Shared: Count = 0
+                
+                
+                +spaCy Features with lowest tfidf:
+                ===========================================================================
+                ['vascular statu' 'foot prep' 'foot prep drape' 'stabl vascular statu'
+                'stabl vascular' 'sign stabl vascular' 'superiorli inferiorli'
+                'retaining retractor' 'retaining' 'modified' 'stenosi right'
+                'muscl separ' 'procedur anesthesia' 'year caucasian femal' 'vesicouterin'
+                'left fallopian' 'constant' 'dissection' 'mention' 'muscl separ midlin'
+                'separ midlin' 'incis subcutaneous' 'general endotrach'
+                'incis subcutaneous tissu' 'incis level']
+                ===========================================================================
+                -spaCy Features with lowest tfidf:
+                ===========================================================================
+                ['procedur performed left', 'endotracheal estim', 'station pronat drift', 
+                'famili member', 'patient year old', 'endotracheal estim blood', 'present abcd', 
+                'superiorli inferiorli', 'bent', 'angioplasty', 'creatinin glucos', 
+                'retractor place', 'soft nontender nondistended', 'patient year', 'accessori',
+                'nontender nondistended', 'neck supple', 'vesicouterin', 'anesthesia spinal', 
+                'kling', 'soci', 'undi vicryl', 'length patient', 'soci history',
+                'station pronat']
+                ===========================================================================
+                    Feature Differences: Count = 39
+                    Feature Shared: Count = 0
+                
+                
+                
+                +spaCy Features with highest tfidf:
+                ===========================================================================
+                ['arterial' 'biliary' 'reason visit' 'ica' 'capac' 'motor unit' 'ice'
+                'tonsil' 'angiogram' 'tremor' 'eclampsia' 'vestibular' 'cataract' 'sleep'
+                'temporal' 'fetal' 'reason' 'epicondyl' 'instil' 'seed' 'cholelithiasi'
+                'neg' 'suit' 'indic' 'subject']
+                ===========================================================================
+                -spaCy Features with highest tfidf:
+                ===========================================================================
+                ['comfort', 'vision', 'report correct', 'abc', 'social', 'lung', 'univers', 
+                'doubl', 'care unit stabl', 'lid', 'mca', '325', 'levels', 'wave', 'clamp', 
+                'patient start', 'abdomin pain nausea', 'time week', 'degen disc', 'patient follow', 
+                'low pain', 'african american male', 'lovenox', 'begin', 'hydronephrosi']
+                ===========================================================================
+                    Feature Differences: Count = 24
+                    Feature Shared: Count = 2
+                
 
 You can plainly see that the most common words, the largest words in the wordcloud, now appear to be in the lowest ranking for IDF. Having taken account to inverse document frequency, popular terms can vary quite dramatically such as in our case, which is a great example of the differences of the two vectorization methods. 
 High IDF terms such as Huntington's is a word that can significnatly help classify its' corresponding class (neurology?), something that the word 'patient' cannot do.
