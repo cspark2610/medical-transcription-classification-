@@ -1,31 +1,28 @@
-# Medical Specialty Text Classification of Transcription Notes using CountVectorization, TF-IDF, scispaCy's Biomedical NLP Package
-#  and Methodology Assessment for Improving Classification Performances.
+# Medical Specialty Text Classification of Transcription Notes using CountVectorization, TF-IDF, scispaCy's Biomedical NLP Package and Methodology Assessment (still editing)
 
 * Dataset: de-identified public source medical data from mtsamples.com
-* Dataset details: contains 500 rows of de-identified medical information and 40 unique medical specialty classes, and also includes descriptions, sample names, and keywords.
+* Dataset details: contains 500 rows of de-identified medical information and five columns: medical specialty, descriptions, sample names, keywords
 
 ## Intro
+Brief intro on TF-IDF, CountVectorization:
+In order for algorithms to process language; language data, in whichever form (audio, documents, etc), needs to be converted into numerical vectors. Therefore, we need algorithms that can perform this conversion step. For our situtation, we will be focusing on using text data from medical transcripts, so we will use two vectorization techniques, CountVectorization and TF-IDF (term frequency inverse document frequency).
 
-Brief intro on TF-IDF and CountVectorization.
-Both methods are use to extract features from text data by converting texts (words, docs, tokens, strings) into numerical 
-vectors so it can be processed by alghoritms. The main distinction between the two methods are the IDF weighting propeorty of
-TF-IDF. 
+Both vectorization methods extract features from texts/docs/corpus/etc and, by doing so, returns a term or count/document frequency sparse matrix. 
 
-*from wiki, 'tf–idf value increases proportionally to the number of times a word appears 
-in the document and is offset by the number of documents in the corpus that contain the word'.
+The main distinction between the two methods is the incorporation of IDF weighting to words, a property of TF-IDF which count vectorization does not use.  
+
+*from wiki, "tf–idf value increases proportionally to the number of times a word appears 
+in the document and is offset by the number of documents in the corpus that contain the word".
 
 In other words, a term that appears very often in documents/corpora such as 'the' or 'and' will increase
-in value due to its frequency, however since 'the' and 'and' appear in a great amount of documents as well, they are
-penalized for it, and their weight values are adjusted to lower levels, indicating their lack in value to 'explain' their classes' variance, and are not very useful in NLP techniques.
+in value due to its frequency, however since 'the' and 'and' appear in a great amount of documents coincidentally, these two terms are penalized, and their weight values become adjusted to lower levels. The level of values indicate their significance in characterizing their classes' property. Therefore, we try to engineer our way to produce higher valued term weights.
 
-CountVectorization does not take IDF into account. Unique terms are collected and are paired with values
-that correspond to their frequency. Therefore, terms like 'the' and 'and' will stand out in CV extraction. Unfortunately for them,
-a pre-filtering process using stopwords (list of common words that have little to no value 'the and he she I am from' and etc.,) removal. So, unfortunately, they will be filtered out again and have no place in the world of NLP.
-
-Having said, I lean towards TF-IDF for text feature extraction rather than CountVect. Even with stopwords removal, IDF weighting is simply a much more valuable attribute to have and can be used in most domains.
+CountVectorization does not take IDF into account. Unique terms are collected and paired with their frequency.
+Therefore, the terms 'the' and 'and' will stand out in CV extraction, but, CV has hyperparamters that can be tuned to filter these types of terms (as well as TF-IDF).
 
 
-## Objective: Classify medical transcript notes into predefined medical specialties with extra ambulatory features and evaluate findings.
+## Objective: Classify medical transcript notes into predefined medical specialties using several approaches and examine which results in producing the highest classifcation rate (for this project, the main focus will be on F1-scores).
+
 We will be using the following seven classifiers.
 
 ### Classification Algorithms:
@@ -42,26 +39,24 @@ I selected classifers with a primary focus on OVR classifers, since we have a la
 ### Approach
 1. Begin by spliting dataset into training and testing sets (test size @ 20%)
 
-2. Construct text preprocessing functions:
+2. Construct two text preprocessing functions:
 
     a. Lowercase, remove punctuations/stopwords/special chars/digits/whitespace, lemmatize and stem words and remove any terms with less than 2 chars.
 
-    b. Second function follows same procedures but includes scispaCy's en_core_sm biomed package to assist in extracting biomedical terminology.
+    b. Second function follows same procedures as above, but includes scispaCy's en_core_sm biomed NLP package to assist in extracting biomedical term features.
 
-    c. Input preprocessing function into CountVec and TF-IDF's 'preprocessing' param.
-    
-    d. Comapare classification reports later on.
+    c. Integrate our text preprocessing function with CV and TF-IDF.
  
-3. Feature extraction of texts using CountVectorization and TF-IDF. Both parameters were set
-at max 5000 features, inclusion of uni/bi/trigrams. Removes terms occuring upyo 95% of transcriptions as well as a a threshold for being present in 4,5 docs/transcripts for tf-idf and CV, respectively.
+3. Feature extraction of texts using CountVectorization and TF-IDF. Both parameters set at max 5000 features, inclusion of uni/bi/trigrams. Remove terms that occur within 95% of our transcriptions and a minimum threshold which discards terms that are not present in atleast 4,5 docs/transcripts for tf-idf and CV, respectively.
 
 
-4. Apply Truncated SVD onto ONLY training sets then transform test and train sets using this fitted vector - otherwise enables data leakage and inflation of metrics. Set a proportional variance percentage you would like to have explained of original set by reduced features (from 'k' number of singular vector decomposition' - beyond scope to go into details). This is a commonly used combination of textfeature extraction with TSVD, it is known as LSA or latent semantic analsys.
+4. Apply Truncated SVD onto ONLY training sets then transform test and train sets using the fitted vector - otherwise we will have a case of data leakage and inflated metrics. Set a proportional variance percentage goal (95% will be used) you would like to have explained of the original variance. The sequential process of vectorization and TSVD is also known as LSA, latent semantic analysis.
 
 ### Import dataset and packages
 
-Starting off, extract our two columns, transcription and medical specialy, and then check and remove missing values, which happened to only be 0.66%.
-Our dependent or target variable consists of 40 unique classes:
+To start off, we will extract our two columns of interest, transcription and medical specialy, and check for missing values. Since, we only have 0.66% of missing values, we will remove them. Let's take a look at our target variable, medical specialty.
+
+Target variable consists of 40 unique classes:
 
                 ['Allergy/Immunology' 'Bariatrics' 'Cardiovascular/Pulmonary' 'Neurology'
                  'Dentistry' 'Urology' 'GeneralMedicine' 'Surgery' 'Speech-Language'
@@ -76,37 +71,37 @@ Our dependent or target variable consists of 40 unique classes:
                  'Cosmetic/PlasticSurgery' 'Consult-HistoryandPhy.' 'Chiropractic'
                  'Autopsy']
  
-The following barplot displays the distribution of transcription counts for each class from most to least. 
+So, we see that under medical specialty there are a few classes that are not releveant to our objective such as OfficeNotes, Letters, SOAP charts. We will remove them, but before doing so let's examine the distribution of transcriptions for our classses.
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img1.png)
 
-Evidently, the figure shows very high class imbalance, ranging from 6 to 1088 transcripts. Surgery sticks out immediately, having a much higher count than the others which is a bit of an issue for classification; especially given the handful of classes with lower values. So, it is time to start cutting out classes.
+It is clearly evident that our classes are severely imbalanced; classes range from from 6 to 1088 transcripts, which is problematic. In addition, we can see that Surgery has clearly more values than the others by a good amount. Lastly, we observe that a handful of our classes have very few transcription values which we will unfortunately have to account for by screening them out.
 
-We will filter out classes that are unusable from low counts and irrelevant for the scope of this project.
+So after diving deeper into Surgery, it appears that it is composed of a mix of generalized and specialized procedures from other classes, along with 'outlier' procedures that do not quite belong to any of the other 39 classes. It is concerning that Surgery contains information that overlap with many of our specialties, and, in addition to its' contribution to our case of imbalanced class data; I believe we should drop it, in spite of the lost data.
 
-Firstly, after examining Surgery, it appears that it is composed of a mix of generalized and specialized procedures from other classes, along with other 'outlier' procedures that do not quite belong in the other 39 classes. For reasons of potentially strong overlap with others specialties, in addition to having vastly far more counts than the rest, I chose to drop this class, in spite of the data loss.
+* Note: Surgery data can be salvaged, in my opinion, by partitioning data by procedural type and reallocate them to appropriate classes; however, parsing through 1000+ transcripts will be very time consuming.
 
-* Note: in another project, or even deeper into this one, I believe Surgery can be partitioned by procedural type and be reallocated to appropriate classes, although  parsing through 1000+ transcripts will be very time consuming.
+Next, we will filter out our secondary classes, 'OfficeNotes', 'SOAP/Chart/ProgressNotes', 'Letters', 'IME-QME-WorkCompetc.', 'DischargeSummary' and, 'Consult-HistoryandPhy'.
 
-Nexy, I filtered out secondary classes such as 'OfficeNotes', 'Letters', 'IME-QME-WorkCompetc., and, 'Consult-HistoryandPhy'.
-And, lastly, we need to decide a suitable cut-off threshold that filters thru frequency counts amongst the lower classes. I've went a bit further attempting different thresholds (25 and 50 transcripts), along with using four different resampling methods (SMOTE, ADASYN, SMOTEEN, SMOTETOMEK), all of which actually lowered classifcation rate, but this may be a result of resampling from lower counts. 
-Additionaly, with train,test,split our training set will be further reduced. Therefore, I decided that our threshold be set at 75 and above. This leads to having 13 unique classes. 
+Now we need to decide on a threshold cut-off for lower classes. So, I've went a bit further along attempting different thresholds (25 and 50 transcripts), along with attempting four different resampling methods (SMOTE, ADASYN, SMOTEEN, SMOTETOMEK) - all of which actually worsened performance, perhaps, in result of resampling from low number of values. 
+
+Additionaly, we will be patitioning our dataset into testing and training set that would cause classes to have even less. Therefore, we will proceed by setting our cut-off threshold at 75 and above. This leads to 13 unique classes. 
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img2.png)
 
-It is great to see that our distribution is fairly balanced with a decent amount of data for all classes.
+With our 13 classes, our distribution balance significantly improved.
 
 ## Text Preprocessing
 
-Before we beging feature extraction, a lot of work preprocessing needs to take place to streamline the vectorization process. This includes splitting our transcripts into lists of words, lowercasing all words, expanding contractions (i.e., that's -> that is), removing punctuations, stopwords, digits, special characters, and outliers that I had picked up along the way ('mmddyyyy','abc', etc.). Basically, any words or sequene of words you know does not help define the uniqueness of the class to allow for better classification. And, lastly, texts/tokens are lemmatized, stemmed, and terms with less tah n2 character counts will be discarded. 
+Before we beging feature extraction, a lot of preprocessing needs to take be enacted to streamline the vectorization process. This includes splitting our transcripts into lists of words, lowercasing all words, expanding contractions (i.e., that's -> that is), removing punctuations, stopwords, digits, special characters, and outliers that I had picked up along the way ('mmddyyyy','abc', etc.). Basically, any words or sequene of words you know does not help define the class. And, lastly, lemmatizing and stemming words, and removing terms with less tah n2 characters. 
 
-For evaluation of scispaCy's 'en_core_sm' biomedical NLP package, I developed two preprocessing functions that perform all the above functions withe the exception of the latter function which will include scispaCy's functionality. 
+For evaluation of scispaCy's 'en_core_sm' biomedical NLP package, we will develop two preprocessing functions that perform all the above with one of the functions containing scispaCy. 
 
 You can look more into it. This package contains over 100,000 biomedical vocabulary, contains more attributes and methods such as abbreviation detection, genetic biomarkers, and details for biomedical entities. Here is the url, https://pypi.org/project/scispacy/. 
 
 ### Text Data Feature Extraction - Count Vectorization (CV) and term frequency inverse document frequency (Tf-IDF)(TF)
 
-So, now we will intiate the feature extraction process. We will begin by performing sklearn's 'train_test_split' function to output 20% testing set and 80% training set. Reasons for why we are doing this first is because we do not want to fit and tranform our entire dataset with CV and TFIDF; by doing so, will allow some extra information regarding our validation set to leak into our classification process, which will inflate our metrics. So, split first.
+We will begin by performing sklearn's 'train_test_split' function to output 20% testing set and 80% training set. Reasons for why we are doing this first is because we do not want to fit and tranform our entire dataset with CV and TFIDF; by doing so, will allow some extra information regarding our validation set to leak into our classification process, which will inflate our metrics. So, split first.
 
 Now we are setting our parameters for Count Vectorization and Tf-Idf. I set both to extract unigrams, bigrams and trigrams, or (1,3 n-grams), max features were set to 5000; although, a higher number of features will allow for better classification scores, but this will require higher computing power and memory, which I do not currently have at my disposal.
 
