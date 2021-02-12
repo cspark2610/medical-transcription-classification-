@@ -475,6 +475,7 @@ This plot shows the comparisons between LSA scispaCy, LSA and their baseline cou
 Final look into SGD TF-IDF LSA_scispaCy model.
 
 * Base LSA Tf-Idf SGD Model Classification report:
+
                 ===========================================================================
                                           precision    recall  f1-score   support
 
