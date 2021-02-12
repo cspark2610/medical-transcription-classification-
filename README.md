@@ -167,7 +167,7 @@ For contrast when comparing outputs of TF-IDF. To reiterate, simply having a hig
 The IDF distribution plot is slightly negatively skewed, and texts were annotated across ranging IDF values (every 50th term between 0 to 5000) demcarcated by their X position. The terms become more sophisticated as the IDF and X axis position increases. The term 'patient', 'procedure patient', 'drug' are the lowest IDF terms on this plot and it also seems as the IDF increases, the more number of bigrams and trigrams are present.  
 
 
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img_16.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img_16.PNG)
 
                 
 You can plainly see that the most common words, the largest words in the wordcloud, now appear to be in the lowest ranking for IDF. Having taken account to inverse document frequency, popular terms can vary quite dramatically such as in our case, which is a great example of the differences of the two vectorization methods. 
