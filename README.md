@@ -175,7 +175,7 @@ You can plainly see that the most common words, the largest words in the wordclo
 
 Chi-squared Tests for Tf-idf and CV were performed compare the differences in correlated terms to their class. With the number of unqiue terms betweeen TfIDF and CVect.
 
-===========================================================================
+
 ==> GeneralMedicine:
 
   * Most Correlated Tf-Idf Texts: 
@@ -186,7 +186,7 @@ procedur, heent, emergency, daili, blood pressur, sugar, suppl, breath, sleep, h
 
 Num of Differences Between Tf-Idf and CV in top 15: 16
 
-===========================================================================
+
 ==> Radiology:
 
   * Most Correlated Tf-Idf Texts: 
@@ -197,7 +197,7 @@ motor, incis, signal, impress, vicryl, room, diagnosi, exam, histori, sutur, pat
 
 Num of Differences Between Tf-Idf and CV in top 15: 20
 
-===========================================================================
+
 ==> Urology:
 
   * Most Correlated Tf-Idf Texts: 
@@ -208,7 +208,6 @@ glan, penile, urethral, cystoscopi, prostat, prostate, peni, bladder, testicl, u
 
 Num of Differences Between Tf-Idf and CV in top 15: 4
 
-===========================================================================
 ==> Ophthalmology:
 
   * Most Correlated Tf-Idf Texts: 
@@ -219,7 +218,6 @@ phacoemulsif, right eye, lid, eye, chamb, speculum, len, cataract, anterior cham
 
 Num of Differences Between Tf-Idf and CV in top 15: 4
 
-===========================================================================
 ==> Obstetrics/Gynecology:
 
   * Most Correlated Tf-Idf Texts: 
@@ -230,7 +228,6 @@ fallopian, placenta, infant, cervix, vagina, fallopian tub, pelvic, vaginal, ute
 
 Num of Differences Between Tf-Idf and CV in top 15: 4
 
-===========================================================================
 ==> Nephrology:
 
   * Most Correlated Tf-Idf Texts: 
