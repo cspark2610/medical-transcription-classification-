@@ -550,4 +550,4 @@ I hope you found some insight through this project and thank you for reading it.
 I have not attempted downsampling majority classess, which may have improved scores, simply due to having a great deal of data loss from dropping surgery.
 But, I believe surgery can be partitioned by procedural type and reallocate the data to make good use of it. 
 
-Moreover, I believe implementing a more sophisticated text preprocessing method by addition of conversion of medical jargon, acronyms, and partitioning transcripts by common headers such as, "SUBJECTIVE, HISTORY, CHIEF COMPLAINT", can lead to more insight and similiarities in data structure. And, lastly, but not the very least, more data is always welcome. 
+Moreover, I believe implementing a more sophisticated text preprocessing method by addition of conversion of medical jargon, acronyms, and partitioning transcripts by MeSH headings would be effective.
