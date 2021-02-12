@@ -263,7 +263,7 @@ Classification Algorithms:
 * Linear Support Vector Classifier OVR
 * K-Nearest Neighbors Classifier
 * LightGBM Classifier 
-
+============================================
 * TF-ID scispaCy
 
 
@@ -444,7 +444,7 @@ Classification Algorithms:
  
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img11.png)
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img17.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img_17.png)
 
 So, from our results it is quite evident that all three preprocessing methods are fairly even in scoring. Adaboosted Trees are lowest, but that is to be expected, since it uses slow learners to amplify its classification ability. Both logistic regression models produced the highest F1 scores; LR is always reliable. For the most case, LSA tends to produce higher metrics as well as spaCy, but it is not convincing. So we will have to tune hyperparameters to get a better estimate of the impact of preprocessing methods. 
 
