@@ -1,60 +1,53 @@
-# Medical Specialty Text Classification of Transcription Notes using CountVectorization, TF-IDF, scispaCy's Biomedical NLP Package and Methodology Assessment (still editing)
+# Text Classification of Medical Specialties and Evaluation of Different Preprocessing Methods using CountVectorization, TF-IDF, scispaCy's Biomedical NLP Package and Methodology Assessment (editing from tuning)
 
 * Dataset: de-identified public source medical data from mtsamples.com
 * Dataset details: contains 500 rows of de-identified medical information and five columns: medical specialty, descriptions, sample names, keywords
 
 ## Intro
 Brief intro on TF-IDF, CountVectorization:
-In order for algorithms to process language; language data, in whichever form (audio, documents, etc), needs to be converted into numerical vectors. Therefore, we need algorithms that can perform this conversion step. For our situtation, we will be focusing on using text data from medical transcripts, so we will use two vectorization techniques, CountVectorization and TF-IDF (term frequency inverse document frequency).
 
-Both vectorization methods extract features from texts/docs/corpus/etc and, by doing so, returns a term or count/document frequency sparse matrix. 
+For algorithms to process language, language data, in any format (audio, documents, etc), needs to ultimately be converted into numerical vectors. Therefore, we rely on algorithms that can perform this conversion. For our purposes, we will use two vectorization techniques, CountVectorization and TF-IDF (term frequency inverse document frequency).
 
-The main distinction between the two methods is the incorporation of IDF weighting to words, a property of TF-IDF which count vectorization does not use.  
+*hash vectorization is also available
+
+Both vectorization methods extract features from corpus, that are composed of documents, and through conversion they return a term/document frequency sparse matrix. 
+
+The main distinction between the two methods is IDF weighting. CountVectorization relies on count/frequency of terms to determine weights, while TF-IDF, is the term frequency multiplied by IDF weights. IDF or inverse document frequency, will penalize term weights based on how often they appear among total documents. We will see examples later below.
 
 *from wiki, "tf–idf value increases proportionally to the number of times a word appears 
 in the document and is offset by the number of documents in the corpus that contain the word".
 
-In other words, a term that appears very often in documents/corpora such as 'the' or 'and' will increase
-in value due to its frequency, however since 'the' and 'and' appear in a great amount of documents coincidentally, these two terms are penalized, and their weight values become adjusted to lower levels. The level of values indicate their significance in characterizing their classes' property. Therefore, we try to engineer our way to produce higher valued term weights.
-
-CountVectorization does not take IDF into account. Unique terms are collected and paired with their frequency.
-Therefore, the terms 'the' and 'and' will stand out in CV extraction, but, CV has hyperparamters that can be tuned to filter these types of terms (as well as TF-IDF).
-
-
-## Objective: Classify medical transcript notes into predefined medical specialties using several approaches and examine which results in producing the highest classifcation rate (for this project, the main focus will be on F1-scores).
+## Objective: Classify medical specialties based on transcription notes using a combination of preprocessing methods. Achieveing highest F1-score is the aim.
 
 We will be using the following seven classifiers.
 
 ### Classification Algorithms:
 * Stochastic Gradient Descent Classifier OVR
-* Multinomial Logistic Regression  and OVR
+* Multinomial Logistic Regression 
 * Logistic Regression OVR
 * AdaBoosted Decision Trees Classifier
 * Linear Support Vector Classifier OVR
 * K-Nearest Neighbors Classifier
 * LightGBM Classifier 
 
-I selected classifers with a primary focus on OVR classifers, since we have a large number of classes; perhaps, OVR can mitigate this issue by collapsing the classification process by piecemeal; OVR, or also goes by OVA (one vs all), sets one class against the others classes as a unified class, thereby simplifying the problem into multiple binary classifications. It is a promising approach rather than attempting to classify all targets at once. Boosters were selected cause I hoped that in the case where there are strong overlaps between neighboring classes, the boosting ability will adjust weights accordingly from pre classified and misclassified cases - which would be optimal. KNN classifier, I included, not particularly for classification score purposes, but more of an interest into how complex or overfit nearest neighbor alghorithm can extend to within domains and datasets such as medical notes. 
 
 ### Approach
-1. Begin by spliting dataset into training and testing sets (test size @ 20%)
+1. Split dataset into training and testing sets (test size @ 20%)
 
-2. Construct two text preprocessing functions:
+2. Build two types of text preprocessing functions:
 
-    a. Lowercase, remove punctuations/stopwords/special chars/digits/whitespace, lemmatize and stem words and remove any terms with less than 2 chars.
+    a. Lowercase, remove punctuations/stopwords/specialchars/digits/whitespace/terms with less than 2 chars, lemmatize and stem words/
 
-    b. Second function follows same procedures as above, but includes scispaCy's en_core_sm biomed NLP package to assist in extracting biomedical term features.
-
-    c. Integrate our text preprocessing function with CV and TF-IDF.
+    b. Second function will do the same, but will include scispaCy's en_core_sm biomed NLP package to assist in extracting biomedical term features.
  
 3. Feature extraction of texts using CountVectorization and TF-IDF. Both parameters set at max 5000 features, inclusion of uni/bi/trigrams. Remove terms that occur within 95% of our transcriptions and a minimum threshold which discards terms that are not present in atleast 4,5 docs/transcripts for tf-idf and CV, respectively.
 
 
-4. Apply Truncated SVD onto ONLY training sets then transform test and train sets using the fitted vector - otherwise we will have a case of data leakage and inflated metrics. Set a proportional variance percentage goal (95% will be used) you would like to have explained of the original variance. The sequential process of vectorization and TSVD is also known as LSA, latent semantic analysis.
+4. Apply Truncated SVD onto ONLY training sets then transform test and train sets using the fitted vector - otherwise we will have a case of data leakage and inflated metrics. Set a proportional variance percentage goal (95% will be used) you would like to have explained of the original . The sequential process of vectorization and TSVD is also known as LSA, latent semantic analysis.
 
 ### Import dataset and packages
 
-To start off, we will extract our two columns of interest, transcription and medical specialy, and check for missing values. Since, we only have 0.66% of missing values, we will remove them. Let's take a look at our target variable, medical specialty.
+After importing dataset, we extract our two columns of interest, transcription and medical specialty. Since, we only have 0.66% of missing values, we will remove them. Let's take a look at our target variable, medical specialty.
 
 Target variable consists of 40 unique classes:
 
@@ -71,21 +64,20 @@ Target variable consists of 40 unique classes:
                  'Cosmetic/PlasticSurgery' 'Consult-HistoryandPhy.' 'Chiropractic'
                  'Autopsy']
  
-So, we see that under medical specialty there are a few classes that are not releveant to our objective such as OfficeNotes, Letters, SOAP charts. We will remove them, but before doing so let's examine the distribution of transcriptions for our classses.
+So, we see that there are several classes that are not releveant for our objective such as OfficeNotes, Letters, SOAP charts. We will remove them, but before doing so let's examine the distribution of transcriptions for our classses.
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img1.png)
 
-It is clearly evident that our classes are severely imbalanced; classes range from from 6 to 1088 transcripts, which is problematic. In addition, we can see that Surgery has clearly more values than the others by a good amount. Lastly, we observe that a handful of our classes have very few transcription values which we will unfortunately have to account for by screening them out.
 
-So after diving deeper into Surgery, it appears that it is composed of a mix of generalized and specialized procedures from other classes, along with 'outlier' procedures that do not quite belong to any of the other 39 classes. It is concerning that Surgery contains information that overlap with many of our specialties, and, in addition to its' contribution to our case of imbalanced class data; I believe we should drop it, in spite of the lost data.
+Clearly our classes are imbalanced; classes range from from 6 to 1088 transcripts, which is problematic. In addition, we can see that Surgery has far more values than the others by a significant amount. Lastly, we see that a handful of our classes have very few transcriptions which we will unfortunately have to account for by screening them out.
 
-* Note: Surgery data can be salvaged, in my opinion, by partitioning data by procedural type and reallocate them to appropriate classes; however, parsing through 1000+ transcripts will be very time consuming.
+So after diving deeper into Surgery, it appears that it is composed of a mix of generalized and specialized procedures from other classess. It is concerning that Surgery contains information that overlap with many of our specialties, in addition to how it is imbalacing our data. Therefore we will drop it, in spite of the lost data.
 
-Next, we will filter out our secondary classes, 'OfficeNotes', 'SOAP/Chart/ProgressNotes', 'Letters', 'IME-QME-WorkCompetc.', 'DischargeSummary' and, 'Consult-HistoryandPhy'.
+* Note: Surgery data can be salvaged, perhaps, through MeSH techniques
 
-Now we need to decide on a threshold cut-off for lower classes. So, I've went a bit further along attempting different thresholds (25 and 50 transcripts), along with attempting four different resampling methods (SMOTE, ADASYN, SMOTEEN, SMOTETOMEK) - all of which actually worsened performance, perhaps, in result of resampling from low number of values. 
+Next, filter out our secondary classes, 'OfficeNotes', 'SOAP/Chart/ProgressNotes', 'Letters', 'IME-QME-WorkCompetc.', 'DischargeSummary' and, 'Consult-HistoryandPhy'.
 
-Additionaly, we will be patitioning our dataset into testing and training set that would cause classes to have even less. Therefore, we will proceed by setting our cut-off threshold at 75 and above. This leads to 13 unique classes. 
+Now we need to decide on a threshold cut-off for lower classes. So, I've went a bit further along attempting different thresholds (25 and 50 transcripts), along with attempting four types of resampling methods (SMOTE, ADASYN, SMOTEEN, SMOTETOMEK) - all of which actually decreased performance, probably, in result of oversampling from a few transcriptions - high bias. Therefore, we will set our cut-off threshold at 75 and above. 
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img2.png)
 
@@ -93,39 +85,40 @@ With our 13 classes, our distribution balance significantly improved.
 
 ## Text Preprocessing
 
-Before we beging feature extraction, a lot of preprocessing needs to take be enacted to streamline the vectorization process. This includes splitting our transcripts into lists of words, lowercasing all words, expanding contractions (i.e., that's -> that is), removing punctuations, stopwords, digits, special characters, and outliers that I had picked up along the way ('mmddyyyy','abc', etc.). Basically, any words or sequene of words you know does not help define the class. And, lastly, lemmatizing and stemming words, and removing terms with less tah n2 characters. 
+To get better classification results, documents need to be cleansed and extracted og important words that help define its' class. As mentioned above, we will splitting our transcripts into bag of words, lowercasing all words, removing punctuations, stopwords, digits, special characters, and outliers that I had picked up along the way ('mmddyyyy','abc', etc.). And, lastly, lemmatizing and stemming words,
 
-For evaluation of scispaCy's 'en_core_sm' biomedical NLP package, we will develop two preprocessing functions that perform all the above with one of the functions containing scispaCy. 
+For evaluation of scispaCy's 'en_core_sm' biomedical NLP package, we will develop two preprocessing functions that perform all the above with one of the functions containing this package. 
 
-You can look more into it. This package contains over 100,000 biomedical vocabulary, contains more attributes and methods such as abbreviation detection, genetic biomarkers, and details for biomedical entities. Here is the url, https://pypi.org/project/scispacy/. 
+This package contains over 100,000 biomedical vocabulary, contains more attributes and methods such as abbreviation detection and details on biomedical entities. Here is the url, https://pypi.org/project/scispacy/. 
 
 ### Text Data Feature Extraction - Count Vectorization (CV) and term frequency inverse document frequency (Tf-IDF)(TF)
 
-We will begin by performing sklearn's 'train_test_split' function to output 20% testing set and 80% training set. Reasons for why we are doing this first is because we do not want to fit and tranform our entire dataset with CV and TFIDF; by doing so, will allow some extra information regarding our validation set to leak into our classification process, which will inflate our metrics. So, split first.
+Using the function we built, we will employ sklearn's 'train_test_split' function to output 20% testing set and 80% training set.
 
-Now we are setting our parameters for Count Vectorization and Tf-Idf. I set both to extract unigrams, bigrams and trigrams, or (1,3 n-grams), max features were set to 5000; although, a higher number of features will allow for better classification scores, but this will require higher computing power and memory, which I do not currently have at my disposal.
+Now we are setting our parameters for Count Vectorization and Tf-Idf. Setting both to extract unigrams, bigrams and trigrams, or (1,3 n-grams), max features were set to 5000; although, a higher number of features will allow for better classification scores, but this requires higher computing power and memory, which I do not currently have.
 
-Max_df were set to 95%, meaning that terms that appear in 95% of our total number of transcriptions will be removed. Furthermore, Min_df was set to terms having to appear in atleast 4 and 5 document appearances for tf-idf and cv, respectively. We do not want terms that are too common or too rare. 
+Max_df are set to 95%, meaning that terms that appear in 95% of our total number of transcriptions will be removed. Furthermore, Min_df are set to terms having to appear in atleast 4 and 5 document appearances for tf-idf and cv, respectively. We do not want terms that are too common or too rare. 
 
 And finally, both methods were fit to only the training sets and then transformed both training and testing sets using the vector that was fitted on training set.
-So now, we have converted our text strings into numerical vectors representening our language! The outputs are sparse matrices, which is perfect for the following method.
 
-### Truncated SVD 
+So now, we have converted our text strings into numerical vectors that represent our language! 
 
-Truncated SVD, similiar but not equivalent to PCA, will be applied to our textcount/tf-idf sparse matrices - these two sequential processess are better known as latent semanatic analysis (LSA). Latent, meaning subtle or hidden; semantics, in the case of variable meanings of terms depending on context in which it is being used. The benefit of LSA is very rewarding, it transforms our term count/sparse matrices into a "semantic" space of lower dimensionality and uses "K"-number of singular value decomposition to find hidden, latent meanings and embeddings within our texts that allows us, or the computer, to understand the contexts, terms, etc of our data; and additionaly, by uncovering more conncetions between our texts, LSA allows our original data variance to be explained with reduced amount of features/data. As you can see below. 
+### LSA - Truncated SVD 
+
+Truncated SVD, similiar but not equivalent to PCA, will be applied to our count/inverse document freq sparse matrices. The benefit of LSA is  it transforms our count/sparse matrices into a "semantic" space of lower dimensionality and uses "K"-number of singular value decomposition to find hidden, latent meanings within our texts wthat allowing us, or the computer, to understand the contexts, terms, etc with lower number of features.  
 
 The number of features reduced from 5000 to 775 for our CV training set, and 5000 to 1123 for TF-IDF training set. I had set my function to try to estimate 95% proportional variance, however we got 94% which is very close and will gladly accept.
 
 
                 Estimating number of components need to explain 95.0% for CV...
                 **************************************************
-                775 components needed to explain 95.0% variance.
+                764 components needed to explain 95.0% variance.
                 **************************************************
                 Initial Feature Training Set -->{(1968, 5000)}
                 Initial Feature Testing Set -->{(492, 5000)}
                 **************************************************
-                Modified Feature Training Set -->(1968, 775)
-                Modified Feature Testing Set -->(492, 775)
+                Modified Feature Training Set -->(1968, 764)
+                Modified Feature Testing Set -->(492, 764)
                 **************************************************
                 Explained proportional variance: 94%
                 
@@ -135,142 +128,130 @@ The number of features reduced from 5000 to 775 for our CV training set, and 500
                 Initial Feature Training Set -->{(1968, 5000)}
                 Initial Feature Testing Set -->{(492, 5000)}
                 **************************************************
-                Modified Feature Training Set -->(1968, 1123)
-                Modified Feature Testing Set -->(492, 1123)
+                Modified Feature Training Set -->(1968, 1126)
+                Modified Feature Testing Set -->(492, 1126)
                 **************************************************
                 Explained proportional variance: 94%
 
         
-Another note to mention is that while the output matrices of CV and TF-IDF are normalized, the results of TSVD/LSA are not, so normalization is required for our output. So to combat my laziness, the normalization function is embedded within the customized TSVD function, so will output normalized results. 
+Another note to mention is that while the output matrices of CV and TF-IDF are normalized, the results of TSVD/LSA are not, so normalization is required for our output. So, I embdedded normalization within our function.
 
-Lastly, the biggest hurdle, in my opinion, for performing TSVD is to find the appropriate number of estimators that can explain our desired proportional variance. 
-So, with the help of a helper function for calculating the amount of estimators needed, our TSVD function is ready to transform, normalize, and output your desired proportional variance (I selected 95%).
+Lastly, for performing TSVD we need to estimate the appropriate number of estimators that can explain our desired proportional variance. 
+So, with the use of a helper function for calculating the amount of estimators needed, our TSVD function is ready to transform, normalize, and output  desired proportional variance (I selected 95%).
 
 ### EDA and t-SNE visualizaiton
 Now that we have preprocessed our transcripts, I'd like to calculate the mean number of 'cleaned' words for each class. 
 
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img3.png)
+The distribution is fairly even. But it can be argued that surgically dominant specialties such as our first and second classess, Orthopedics and Neurosurgery, have higher text averages per transcription; perhaps, due to the preciseness and detailing nature demanded for documenting more complex procedures. While in contrast, Radiology has the least average amount which makes sense given their role; radiologists need to communicate succinctly and be forthright when examining and diagnosising imaging scans and MRIs. 
 
-*
-The distribution is fairly even. But it can be argued that surgically dominant specialties such as our first and second ranked classess, Orthopedics and Neurosurgery, have higher text averages per transcription; perhaps, be due to the preciseness and detailing nature required for documenting more complex procedures. And in contrast, Radiologist tend to have the least average amount which makes sense given their role in medicine. Radiologists need to communicate succinctly and be forthright when examining and diagnosising imaging scans and MRIs. 
-
-* Fun fact: I've shadowed or worked amongst these three fields so as a layman, my speculations may hold the absolute least amount of merit, or maybe entirely biased! 
 
 Proceedingly along, I thought it would be interesting to see the distribution of cleaned words.
 The following pie chart provides an easy way to analyze this.
 
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img4.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img3.png)
 
-Once again, orthopedics ranks the highest, which is rationable, since it had the highest mean texts per transcript; followed by Cardiovascular/Pulmonary which is also
-high in percentage, but again, unsurprising, since it has the most transcripts out of our 13 classes. But the pie chart is a good indicator that the proportion of clean texts are not too unfairly balanced.
+Once again, orthopedics ranks the highest, which is rationable, since it had the highest mean texts per transcript; followed by Cardiovascular/Pulmonary which is also has a high percentage, but again, not very surprising, since it has the most transcripts out of our 13 classes. But the pie chart is a good indicator that the proportion of clean texts are not too unfairly balanced.
 
 Onto Word Clouds!
-The following wordcloud displays the top 50 most common texts found in our training data, and again, unsurprisingly, known medical jargon such as 'patient, left, right, diagnosis, blood' and etc are it.
+The following wordcloud displays the top 50 most common texts found in our training data, and again, unsurprisingly, well known medical jargon such as 'patient, left, right, diagnosis, blood' and etc are leading in count.
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img5.png)
 
-However, despite what you think, I didn't only construct the wordcloud for the enjoyment, but rather, it is useful for contrast when comparing outputs of TF-IDF. To reiterate, simply having a high count will not deliver you high term weight, document frequency needs to be accounted for - this is what tf-idf will gift to us.
+For contrast when comparing outputs of TF-IDF. To reiterate, simply having a high count will not deliver you high term weight, inverse document frequency needs to be accounted for - this is tf-idf gifts to us.
 
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img14.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img4.png)
 
-The IDF distribution plot is negatively skewed, but not largely, and texts were annotated across ranging IDF values (every 250th term between 0 to 5000) demcarcated by their X position. It may not be obvious but the terms become more sophisticated as the IDF and X axis position increases. The term 'patient' and 'recovery room satisfactory' are the lowest and highest annotated text on the distribution plot and it is notable that bigrams and trigrams become more present as the IDF increases.
+The IDF distribution plot is slightly negatively skewed, and texts were annotated across ranging IDF values (every 50th term between 0 to 5000) demcarcated by their X position. The terms become more sophisticated as the IDF and X axis position increases. The term 'patient', 'procedure patient', 'drug' are the lowest IDF terms on this plot and it also seems as the IDF increases, the more number of bigrams and trigrams are present.  
 
-* Text preprocessing function with scispaCy (+spacy)
-* Text preprocessing function without scispaCy (-spacy)
+
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img15.png)
 
                 
-                +spacy Features with lowest idf:
-                ===========================================================================
-                ['patient' 'right' 'left' 'year' 'procedur' 'diagnosi' 'histori' 'blood'
-                'pain' 'room' 'postop' 'posit' 'preoper' 'anesthesia' 'preoper diagnosi'
-                'skin' 'prep' 'drape' 'examin' 'postop diagnosi' 'condit' 'exam' 'normal'
-                'prep drape' 'day']
-                ============================================================================
-                -spacy Features with lowest idf:
-                ===========================================================================
-                ['patient' 'right' 'left' 'normal' 'year' 'use' 'old' 'year old' 'place'
-                'blood' 'time' 'procedur' 'procedure' 'pain' 'present' 'room' 'histori'
-                'follow' 'postop' 'anesthesia' 'skin' 'preoper' 'prep' 'note' 'posit']
-                   
-                Feature Differences: Count = 9
-                Feature Shared: Count = 16
-                
-                
-                +spaCy Features with highest idf:
-                ===========================================================================
-                ['huntington' 'superfici femoral arteri' 'medial malleolu' 'limit lesion'
-                'colostomi' 'neural foraminal stenosi' 'fenestr' 'fistulogram'
-                'superfici femoral' 'glenn']
-                ===========================================================================
-                -spaCy Features with highest idf:
-                ===========================================================================
-                ['comfort', 'vision', 'report correct', 'satisfactori', 'admiss', 'abc', 
-                'restrict', 'lung', 'social', 'univers']
-                ===========================================================================
-                    Feature Differences: Count = 1
-                    Feature Shared: Count = 0
-                
-                
-                +spaCy Features with lowest tfidf:
-                ===========================================================================
-                ['vascular statu' 'foot prep' 'foot prep drape' 'stabl vascular statu'
-                'stabl vascular' 'sign stabl vascular' 'superiorli inferiorli'
-                'retaining retractor' 'retaining' 'modified' 'stenosi right'
-                'muscl separ' 'procedur anesthesia' 'year caucasian femal' 'vesicouterin'
-                'left fallopian' 'constant' 'dissection' 'mention' 'muscl separ midlin'
-                'separ midlin' 'incis subcutaneous' 'general endotrach'
-                'incis subcutaneous tissu' 'incis level']
-                ===========================================================================
-                -spaCy Features with lowest tfidf:
-                ===========================================================================
-                ['procedur performed left', 'endotracheal estim', 'station pronat drift', 
-                'famili member', 'patient year old', 'endotracheal estim blood', 'present abcd', 
-                'superiorli inferiorli', 'bent', 'angioplasty', 'creatinin glucos', 
-                'retractor place', 'soft nontender nondistended', 'patient year', 'accessori',
-                'nontender nondistended', 'neck supple', 'vesicouterin', 'anesthesia spinal', 
-                'kling', 'soci', 'undi vicryl', 'length patient', 'soci history',
-                'station pronat']
-                ===========================================================================
-                    Feature Differences: Count = 39
-                    Feature Shared: Count = 0
-                
-                
-                
-                +spaCy Features with highest tfidf:
-                ===========================================================================
-                ['arterial' 'biliary' 'reason visit' 'ica' 'capac' 'motor unit' 'ice'
-                'tonsil' 'angiogram' 'tremor' 'eclampsia' 'vestibular' 'cataract' 'sleep'
-                'temporal' 'fetal' 'reason' 'epicondyl' 'instil' 'seed' 'cholelithiasi'
-                'neg' 'suit' 'indic' 'subject']
-                ===========================================================================
-                -spaCy Features with highest tfidf:
-                ===========================================================================
-                ['comfort', 'vision', 'report correct', 'abc', 'social', 'lung', 'univers', 
-                'doubl', 'care unit stabl', 'lid', 'mca', '325', 'levels', 'wave', 'clamp', 
-                'patient start', 'abdomin pain nausea', 'time week', 'degen disc', 'patient follow', 
-                'low pain', 'african american male', 'lovenox', 'begin', 'hydronephrosi']
-                ===========================================================================
-                    Feature Differences: Count = 24
-                    Feature Shared: Count = 2
-                
-
 You can plainly see that the most common words, the largest words in the wordcloud, now appear to be in the lowest ranking for IDF. Having taken account to inverse document frequency, popular terms can vary quite dramatically such as in our case, which is a great example of the differences of the two vectorization methods. 
-High IDF terms such as Huntington's is a word that can significnatly help classify its' corresponding class (neurology?), something that the word 'patient' cannot do.
-
-Now onto my personal favorite, t-SNE plots. It is a tremendously benefical way to visualize high dimensional data into 2-D scatter plots. I've tuned the perplexity, learning rate, and exaggeration to try to display the most interpretable plot. I was half way successful. For both plots, mostly tf-idf, there is clearly evidence of clusters which is a good indication for classifcation; however, a few clusters are a bit concerning, particularly, the clusters that contain more than one class embedded classes within a single cluster such as Orthopedics and Neurosurgery, and Radiology with several classes. The general epicenter of overlaps, where "general medicine" can be found, seems to be a challenge, since a little of every class has some value integrated within this area. I am hopeful that it will not crush our classification metrics. 
 
 
-Final note, t-SNE was produced using cosine metric.
+Chi-squared Tests for Tf-idf and CV were performed compare the differences in correlated terms to their class. With the number of u
+
+
+
+===========================================================================
+==> GeneralMedicine:
+
+  * Most Correlated Tf-Idf Texts: 
+heent, throat, distress, blood sugar, suppl, sugar, tender, histori, moist, neck suppl, mucous membran, neg, auscult, sound, subject
+
+  * Most Correlated CountVectorized Texts: 
+procedur, heent, emergency, daili, blood pressur, sugar, suppl, breath, sleep, histori, neg, auscult, right, medic, sound
+
+# of Differences Between Tf-Idf and CV in top 15: 16
+
+===========================================================================
+==> Radiology:
+
+  * Most Correlated Tf-Idf Texts: 
+tricuspid, myoview, contrast, valv, veloc, signal, impress, adenosin, exam, patient, simul, fetal, stress, perfusion, imag
+
+  * Most Correlated CountVectorized Texts: 
+motor, incis, signal, impress, vicryl, room, diagnosi, exam, histori, sutur, patient, anesthesia, procedur, imag, skin
+
+# of Differences Between Tf-Idf and CV in top 15: 20
+
+===========================================================================
+==> Urology:
+
+  * Most Correlated Tf-Idf Texts: 
+glan, penile, bladder, cystoscopi, prostat, foreskin, peni, testicl, urethra, scrotal, scrotum, prostate, circumcis, inguinal, testi
+
+  * Most Correlated CountVectorized Texts: 
+glan, penile, urethral, cystoscopi, prostat, prostate, peni, bladder, testicl, urethra, scrotal, scrotum, bladder neck, inguinal, testi
+
+# of Differences Between Tf-Idf and CV in top 15: 4
+
+===========================================================================
+==> Ophthalmology:
+
+  * Most Correlated Tf-Idf Texts: 
+phacoemulsif, scleral, right eye, lid, eye, chamb, speculum, len, cataract, anterior chamb, ey, limbu, intraocular, right ey, capsular bag
+
+  * Most Correlated CountVectorized Texts: 
+phacoemulsif, right eye, lid, eye, chamb, speculum, len, cataract, anterior chamb, ey, intraocular, corneal, right ey, eyelid, capsular bag
+
+# of Differences Between Tf-Idf and CV in top 15: 4
+
+===========================================================================
+==> Obstetrics/Gynecology:
+
+  * Most Correlated Tf-Idf Texts: 
+fallopian, placenta, infant, cervix, vagina, fallopian tub, labor, vaginal, babi, pregnanc, uterine, ovari, fetal, uteru, deliveri
+
+  * Most Correlated CountVectorized Texts: 
+fallopian, placenta, infant, cervix, vagina, fallopian tub, pelvic, vaginal, uterine, pregnanc, uteru, ovari, fetal, deliveri, peritoneum
+
+# of Differences Between Tf-Idf and CV in top 15: 4
+
+===========================================================================
+==> Nephrology:
+
+  * Most Correlated Tf-Idf Texts: 
+kidney, kidney diseas, stage renal diseas, transplant, end stage, end stage renal, diagnosi end, diagnosi end stage, chronic kidney, renal diseas, renal, stage renal, dialysi, renal mass, cephalic vein
+
+  * Most Correlated CountVectorized Texts: 
+kidney, stage renal diseas, transplant, renal mass, end stage, end stage renal, diagnosi end, diagnosi end stage, nephrostomy, renal diseas, renal, stage renal, dialysi, vein, cephalic vein
+
+# of Differences Between Tf-Idf and CV in top 15: 4
+
+You can see that more specizlied cases had less term differences between TFIDF and CV. But, General Medicine and Radiology which overlaps with many other specialties had high number of term differences,
+
+Lastly, before we move onto modeling, t-SNE visualization plots provide a very nice way to visualize our specialties and data points.
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img6.png)
 
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img8.png)
 
-
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img7.png)
+You can see that TF-IDF compared to CV had more defined clusters which will make it easier to classify. CV also had clusters however had a laragge area composed of a mix of classes. T-SNE was estimated using cosine metric.
 
 
 ## Baseline Modeling
-Now we will get our baseline metrics by training our seven models at default hyperparameters:
 Classification Algorithms:
 * Stochastic Gradient Descent Classifier OVR
 * Multinomial Logistic Regression  and OVR
@@ -282,137 +263,19 @@ Classification Algorithms:
 
 
 
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img8.png)
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img9.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img11.png)
 
-So, from our results it is quite evident that all three preprocessing methods are fairly even in scoring. Adaboosted Trees are lowest, but that is to be expected, since it uses slow learners to amplify its classification ability. Both logistic regression models produced the highest F1 scores; I commend the robustness of LR. We can see that Tf-Idf tends to outperform CountVect in most baseline models. 
-Yet still, there we be a bit of tuning to improve our scores. It is not obvious here but from a few classification reports for baseline classes, Radiology and Neurology seem to be the most problematic classes. I see it as an issue sinc etheir support levels indicate that both classes are fairly high, so I cannot assume the poor metrtics on sample size. But something has to be done to improve these scores.
+So, from our results it is quite evident that all three preprocessing methods are fairly even in scoring. Adaboosted Trees are lowest, but that is to be expected, since it uses slow learners to amplify its classification ability. Both logistic regression models produced the highest F1 scores; LR is always reliable. For the most case, LSA tends to produce higher metrics as well as spaCy, but it is not convincing. So we will have to tune hyperparameters to get a better estimate of the impact of preprocessing methods. 
 
-        ===========================================================================
-        Classification Report - SGDClassifier
-        ===========================================================================
-                                  precision    recall  f1-score   support
-
-        Cardiovascular/Pulmonary       0.67      0.58      0.62        74
-              ENT-Otolaryngology       0.83      0.79      0.81        19
-                Gastroenterology       0.69      0.73      0.71        45
-                 GeneralMedicine       0.58      0.63      0.61        52
-             Hematology-Oncology       0.40      0.33      0.36        18
-                      Nephrology       0.38      0.31      0.34        16
-                       Neurology       0.26      0.22      0.24        45
-                    Neurosurgery       0.26      0.26      0.26        19
-           Obstetrics/Gynecology       0.69      0.81      0.75        31
-                   Ophthalmology       0.94      0.94      0.94        16
-                      Orthopedic       0.62      0.68      0.65        71
-                       Radiology       0.07      0.07      0.07        55
-                         Urology       0.76      0.84      0.80        31
-
-                        accuracy                           0.54       492
-                       macro avg       0.55      0.55      0.55       492
-                    weighted avg       0.54      0.54      0.54       492
-
-        ===========================================================================
-        Classification Report - LogisticRegression_OvR
-        ===========================================================================
-                                  precision    recall  f1-score   support
-
-        Cardiovascular/Pulmonary       0.63      0.74      0.68        74
-              ENT-Otolaryngology       0.93      0.68      0.79        19
-                Gastroenterology       0.78      0.64      0.71        45
-                 GeneralMedicine       0.51      0.81      0.63        52
-             Hematology-Oncology       0.50      0.06      0.10        18
-                      Nephrology       0.67      0.25      0.36        16
-                       Neurology       0.55      0.49      0.52        45
-                    Neurosurgery       0.33      0.21      0.26        19
-           Obstetrics/Gynecology       0.71      0.77      0.74        31
-                   Ophthalmology       1.00      0.88      0.93        16
-                      Orthopedic       0.65      0.85      0.74        71
-                       Radiology       0.20      0.15      0.17        55
-                         Urology       0.81      0.81      0.81        31
-
-                        accuracy                           0.61       492
-                       macro avg       0.64      0.56      0.57       492
-                    weighted avg       0.60      0.61      0.59       492
-
-        ===========================================================================
-        Classification Report LogisticRegression_Multinomial 
-        ===========================================================================
-                                  precision    recall  f1-score   support
-        Cardiovascular/Pulmonary       0.65      0.69      0.67        74
-              ENT-Otolaryngology       0.93      0.68      0.79        19
-                Gastroenterology       0.76      0.64      0.70        45
-                 GeneralMedicine       0.51      0.77      0.61        52
-             Hematology-Oncology       0.75      0.17      0.27        18
-                      Nephrology       0.67      0.25      0.36        16
-                       Neurology       0.53      0.47      0.49        45
-                    Neurosurgery       0.38      0.32      0.34        19
-           Obstetrics/Gynecology       0.71      0.77      0.74        31
-                   Ophthalmology       1.00      0.88      0.93        16
-                      Orthopedic       0.65      0.82      0.72        71
-                       Radiology       0.19      0.16      0.17        55
-                         Urology       0.84      0.84      0.84        31
-
-                        accuracy                           0.61       492
-                       macro avg       0.66      0.57      0.59       492
-                    weighted avg       0.61      0.61      0.59       492
-
-        ===========================================================================
-        Classification Report LinearSVC
-        ===========================================================================
-
-                                  precision    recall  f1-score   support
-
-        Cardiovascular/Pulmonary       0.68      0.61      0.64        74
-              ENT-Otolaryngology       0.83      0.79      0.81        19
-                Gastroenterology       0.73      0.73      0.73        45
-                 GeneralMedicine       0.60      0.69      0.64        52
-             Hematology-Oncology       0.43      0.33      0.38        18
-                      Nephrology       0.42      0.31      0.36        16
-                       Neurology       0.28      0.22      0.25        45
-                    Neurosurgery       0.26      0.26      0.26        19
-           Obstetrics/Gynecology       0.69      0.77      0.73        31
-                   Ophthalmology       0.94      0.94      0.94        16
-                      Orthopedic       0.61      0.68      0.64        71
-                       Radiology       0.07      0.07      0.07        55
-                         Urology       0.79      0.84      0.81        31
-
-                        accuracy                           0.55       492
-                       macro avg       0.56      0.56      0.56       492
-                    weighted avg       0.55      0.55      0.55       492
-
-        ===========================================================================
-        Classification Report KNeighborsClassifier 
-        ===========================================================================
-
-                                  precision    recall  f1-score   support
-
-        Cardiovascular/Pulmonary       0.59      0.72      0.65        74
-              ENT-Otolaryngology       0.78      0.74      0.76        19
-                Gastroenterology       0.78      0.69      0.73        45
-                 GeneralMedicine       0.55      0.58      0.56        52
-             Hematology-Oncology       0.47      0.39      0.42        18
-                      Nephrology       0.50      0.44      0.47        16
-                       Neurology       0.44      0.47      0.45        45
-                    Neurosurgery       0.29      0.21      0.24        19
-           Obstetrics/Gynecology       0.77      0.87      0.82        31
-                   Ophthalmology       1.00      0.94      0.97        16
-                      Orthopedic       0.63      0.73      0.68        71
-                       Radiology       0.19      0.13      0.15        55
-                         Urology       0.76      0.71      0.73        31
-
-                        accuracy                           0.59       492
-                       macro avg       0.59      0.58      0.59       492
-                    weighted avg       0.57      0.59      0.58       492
  
+* Main issue: radiology and neurology/neurosurgery
 
-  
-* Main issue: radiology and neurology/neurosurgery (going back to t-SNE plot, this is expected; generalmedicine and cardiovascular/pulmonary were not as problematic    as I presumed they would be. 
 
 ## Hyperparameter Tuning using GridSearchCV and RandomSearchCV with 5-fold stratified cross-validaiton
 
-For hyperparameter tuning, I combined the two functions, RandomSearchCV and GridSearchCV, and made a diction of all our classifers' hyperparameters. My approach that I used was to use RandomSearch to narrow down hyperparameters and then feed the rest to a 5 fold GridSearch. RandomSearch is much faster than brute forcing GridSearchCV for tuning hyperparameters and flexible, so I tend to combine the benefits of both to get the most out of our models. 
+For hyperparameter tuning, I combined two functions, RandomSearchCV and GridSearchCV. I used RandomSearch to narrow down hyperparameters and then feed the rest to a 5 fold GridSearch. RandomSearch is much faster than brute forcing GridSearchCV for tuning hyperparameters and more flexible, so I tried to take advantage of the benefits of both functions. 
 
-For LightGBM, I used Optuna, which is a hyperparameter optimization framework, for finding optimal hyperparameters at a learning rate, 0.01, that I decided on. How optuna works is that it sequentially calculates number of estimators, feature_fraction, num_leaves, among other hyperparameters in set order, and leaves regularizing for the final step. For our case, since it is multi-class and not binary we will set our loss metric, multi_logloss. 
+For LightGBM, I used Optuna, which is a hyperparameter optimization framework, for finding optimal hyperparameters at a learning rate, 0.01, that I decided on. How optuna works is that it sequentially calculates number of estimators, feature_fraction, num_leaves, among other hyperparameters in set order, and leaves regularizing for the final step. For our case, since it is multi-class and not binary we set our loss metric, multi_logloss. 
 
 ## Final Results
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img12.png)
@@ -422,7 +285,7 @@ Stochastic Gradient Descent Classifier with Tf-Idf vectorization produced highes
 
 Next plot shows comparisons of LSA+scispaCy and LSA. In reality, the LSA model doesn't show much differences with the firsplt against raw values.tf-idf LSA spaCy continues to remain dominant ins highest f1 sorees all around.
 
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img16.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img13.png)
 
 This plot confirms that, in spite of which preprocessing method used for feature extraction, tf-idf produces higher scores on average than countvectorization.
 
@@ -491,9 +354,23 @@ Cardiovascular/Pulmonary       0.77      0.66      0.71        74
 
 Other than the high F1-score, it is great to see that Radiology increased from 5% to 32% and Neurology increased from 16% to 59%. I would conclude that thru tuning SGD was really able to maximize its' potential. 
 
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img13.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img14.png)
 
 The confusion matrix displays count and F1-Score for that class. While, Radiology had lowest F1-score, the improvement from its base model is significant.
+
+
+
+
+
+
+
+Since our dependent/target varaible consists of many classes, I'd like to implement OVR  classifers with a primary focus on OVR classifers, since we have a large number of classes; perhaps, OVR can mitigate this issue by collapsing the classification process by piecemeal; OVR, or also goes by OVA (one vs all), sets one class against the others classes as a unified class, thereby simplifying the problem into multiple binary classifications. It is a promising approach rather than attempting to classify all targets at once. Boosters were selected cause I hoped that in the case where there are strong overlaps between neighboring classes, the boosting ability will adjust weights accordingly from pre classified and misclassified cases - which would be optimal. KNN classifier, I included, not particularly for classification score purposes, but more of an interest into how complex or overfit nearest neighbor alghorithm can extend to within domains and datasets such as medical notes. 
+
+
+
+
+
+
 
 ## Conclusions
 Including scispaCy's biomed package helped improve F1 scores for all classifiers with the exception of KKN Clf. It would be interesting to look deeper into what other funcionalities it possesses that can possibly be used to improve classification rates. Initially, I theorized GeneralMedicine and Cardiovascular/pulmonary class to be the biggest obstacle for this project; since the nature of general medicine being more generalized would encompass factors that  overlap with other specialties and Cardiovascular/pulmonary, for it having the highest transcript count as well as it being a specialty that has numerous morbidity associations with other class diseases. All classifiers had difficulties in distinguishing and classifying radiology and neurology. Even SGD clf, the highest performing classifer, was only able to achieve an F1-score of 33%, although, Neurology did increase significantly to 59%. 
