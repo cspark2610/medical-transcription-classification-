@@ -141,7 +141,7 @@ So, with the use of a helper function for calculating the amount of estimators n
 
 ### EDA and t-SNE visualizaiton
 Now that we have preprocessed our transcripts, I'd like to calculate the mean and total number of 'cleaned' words for each class. 
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img_19.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img_19.PNG)
 
 The distribution is fairly even. But it can be argued that surgically dominant specialties such as our first and second classess, Orthopedics and Neurosurgery, have higher text averages per transcription; perhaps, due to the preciseness and detailing nature demanded for documenting more complex procedures. While in contrast, Radiology has the least average amount which makes sense given their role; radiologists need to communicate succinctly and be forthright when examining and diagnosising imaging scans and MRIs. 
 
@@ -161,17 +161,14 @@ The following wordcloud displays the top 50 most common texts found in our train
 
 For contrast when comparing outputs of TF-IDF. To reiterate, simply having a high count will not deliver you high term weight, inverse document frequency needs to be accounted for - this is tf-idf gifts to us.
 
-
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img4.png)
-
-The IDF distribution plot is slightly negatively skewed, and texts were annotated across ranging IDF values (every 50th term between 0 to 5000) demcarcated by their X position. The terms become more sophisticated as the IDF and X axis position increases. The term 'patient', 'procedure patient', 'drug' are the lowest IDF terms on this plot and it also seems as the IDF increases, the more number of bigrams and trigrams are present.  
-
-
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img_16.PNG)
 
                 
-You can plainly see that the most common words, the largest words in the wordcloud, now appear to be in the lowest ranking for IDF. Having taken account to inverse document frequency, popular terms can vary quite dramatically such as in our case, which is a great example of the differences of the two vectorization methods. 
+You can see that the most common words, the largest words in the wordcloud, now appear to be in the bottom for both TF-IDF and IDF. That is the power of IDF weighting. The higher the idf or tfidf goes, more frequently bigrams and trigrams seem to appear.
 
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img4.png)
+
+The IDF distribution plot is slightly negatively skewed, and texts were annotated across ranging IDF values (every 50th term between 0 to 5000) demcarcated by their X position. The terms become more sophisticated as the IDF or X axis increases. The term 'patient', 'procedure patient', 'drug' are the lowest IDF terms on this plot just like the figure above.
 
 Chi-squared Tests for Tf-idf and CV were performed compare the differences in correlated terms to their class. With the number of unqiue terms betweeen TfIDF and CVect.
 
@@ -238,9 +235,12 @@ kidney, stage renal diseas, transplant, renal mass, end stage, end stage renal, 
 
 Num of Differences Between Tf-Idf and CV in top 15: 4
 
-You can see that more specizlied cases had less term differences between TFIDF and CV. But, General Medicine and Radiology which overlaps with many other specialties had high number of term differences,
+You can see that more specialized classes have less term differences between TFIDF and CV. But, General Medicine and Radiology which overlaps with many other specialties have higher number of term differences, and it also insinuates that these two specialties are harder
+to define by words.
 
-Lastly, before we move onto modeling, t-SNE visualization plots provide a very nice way to visualize our specialties and data points.
+* t-SNE
+
+Lastly, before we move onto modeling, t-SNE visualization plots provide a very nice and simple way to visualize high dimensional features - our specialties and data points.
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img6.png)
 
@@ -248,7 +248,9 @@ Lastly, before we move onto modeling, t-SNE visualization plots provide a very n
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img15.png)
 
-You can see that TF-IDF compared to CV had more defined clusters which will make it easier to classify. CV also had clusters however had a laragge area composed of a mix of classes. T-SNE was estimated using cosine metric.
+You can see that TF-IDF compared to CV had more defined clusters which will make it easier to classify. CV also had clusters however had a larger area composed of a mix of classes. It is difficult to see significant difference between non scispaCy and scispaCy, other than that scispaCy have multiple clusters of the same class in several areas, while non scispaCy classes seem to be in one large cluster.
+
+T-SNE was estimated using cosine metric.
 
 
 ## Baseline Modeling
@@ -260,7 +262,7 @@ Classification Algorithms:
 * Linear Support Vector Classifier OVR
 * K-Nearest Neighbors Classifier
 * LightGBM Classifier 
-# TF-ID scispaCy
+### TF-ID scispaCy Classifcation Reports
 
 
 
@@ -443,9 +445,8 @@ Classification Algorithms:
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img_17.PNG)
 
-So, from our results it is quite evident that all three preprocessing methods are fairly even in scoring. Adaboosted Trees are lowest, but that is to be expected, since it uses slow learners to amplify its classification ability. Both logistic regression models produced the highest F1 scores; LR is always reliable. For the most case, LSA tends to produce higher metrics as well as spaCy, but it is not convincing. So we will have to tune hyperparameters to get a better estimate of the impact of preprocessing methods. 
+So, from our results it is quite evident that all three preprocessing methods are fairly even in scoring. Adaboosted Trees are lowest, but that is to be expected, since it uses slow learners to amplify its classification. Both logistic regression models produced the highest F1 scores; LR is always reliable. For the most case, LSA tends to produce higher metrics as well as spaCy, but it is not convincing. So we will have to tune hyperparameters to get a better estimate of the impact of preprocessing methods. And, going through the classification reports, it is clear that radiology, neurology, and neurosurgery are the most difficult to classify.
 
-However, parsing through the sample classification reports, it is clear that radiology, neurology, and neurosurgery are most difficult to classify.
 * Main issue: radiology and neurology/neurosurgery
 
 
@@ -457,27 +458,23 @@ For LightGBM, I used Optuna, which is a hyperparameter optimization framework, f
 
 ## Final Results
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img12.png)
-
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img_18.PNG)
 
 The plot is between LSA+scispaCy and LSA models, so in theory, it should display the most discrepency of scispaCy's impact on metrics. 
-Stochastic Gradient Descent Classifier with Tf-Idf vectorization produced highest F1-score, 69.1%. And LSA_spaCy tends to out perform in every model. 
+Stochastic Gradient Descent Classifier with Tf-Idf vectorization produced highest F1-score, 70%. And LSA_spaCy tends to out perform in most models aside from KNN and Linear SVC. It is also interesting that the two boosting algortihmns, LGBM Classifier and Adaboosted Trees, did much poorly with count vectorization and scispaCy combined.
 
-Next plot shows comparisons of LSA+scispaCy and LSA. In reality, the LSA model doesn't show much differences with the firsplt against raw values.tf-idf LSA spaCy continues to remain dominant ins highest f1 sorees all around.
+
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img13.png)
 
-This plot confirms that, in spite of which preprocessing method used for feature extraction, tf-idf produces higher scores on average than countvectorization.
-
-
-Multinomial Logistic Regression came close at second with a final F1-score of 67% but SGD is definitively the best estimator.
+This plot shows the comparisons between LSA scispaCy, LSA and their baseline counterparts. 
 
 
 ## Best Estimator - Stoachstic Gradident Descent - Tf-IDF/LSA
 
 Final look into SGD TF-IDF LSA_scispaCy model.
 
-Base LSA Tf-Idf SGD Model Classification report:
+* Base LSA Tf-Idf SGD Model Classification report:
                 ===========================================================================
                                           precision    recall  f1-score   support
 
@@ -533,35 +530,19 @@ Base LSA Tf-Idf SGD Model Classification report:
  
 
 
-Other than the high F1-score, it is great to see that Radiology increased from 5% to 32% and Neurology increased from 16% to 59%. I would conclude that thru tuning SGD was really able to maximize its' potential. 
+Other than the high F1-score, it is great to see that Radiology increased from 9% to 40%, Neurology increased from 24% to 62%, and neurosurgery from 22% to 60%. I would conclude that thru tuning SGD was really able to shine and maximize its' potential. 
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img14.png)
 
-The confusion matrix displays count and F1-Score for that class. While, Radiology had lowest F1-score, the improvement from its base model is significant.
-
-
-
-
-
-
-
-Since our dependent/target varaible consists of many classes, I'd like to implement OVR  classifers with a primary focus on OVR classifers, since we have a large number of classes; perhaps, OVR can mitigate this issue by collapsing the classification process by piecemeal; OVR, or also goes by OVA (one vs all), sets one class against the others classes as a unified class, thereby simplifying the problem into multiple binary classifications. It is a promising approach rather than attempting to classify all targets at once. Boosters were selected cause I hoped that in the case where there are strong overlaps between neighboring classes, the boosting ability will adjust weights accordingly from pre classified and misclassified cases - which would be optimal. KNN classifier, I included, not particularly for classification score purposes, but more of an interest into how complex or overfit nearest neighbor alghorithm can extend to within domains and datasets such as medical notes. 
-
-
-
-
+The confusion matrix displays count and F1-Score for that class. While, Radiology had lowest F1-score, the improvement from its base model is significant. While Neurology and Neurosurgery misclassifications were not as sparse, radiology is seemingly more difficult to distinguish as its own seperate entity.
 
 
 
 ## Conclusions
-Including scispaCy's biomed package helped improve F1 scores for all classifiers with the exception of KKN Clf. It would be interesting to look deeper into what other funcionalities it possesses that can possibly be used to improve classification rates. Initially, I theorized GeneralMedicine and Cardiovascular/pulmonary class to be the biggest obstacle for this project; since the nature of general medicine being more generalized would encompass factors that  overlap with other specialties and Cardiovascular/pulmonary, for it having the highest transcript count as well as it being a specialty that has numerous morbidity associations with other class diseases. All classifiers had difficulties in distinguishing and classifying radiology and neurology. Even SGD clf, the highest performing classifer, was only able to achieve an F1-score of 33%, although, Neurology did increase significantly to 59%. 
+Including scispaCy's biomed package helped improve F1 scores for all classifiers with the exception of KKN Clf and Linear SVC. It would be interesting to look deeper into what other possiblities we can implement with the packages' more complex functions. Initially, I theorized GeneralMedicine and Cardiovascular/pulmonary class to be the biggest obstacle for this project; since the nature of general medicine being more generalized would encompass factors that overlap with other specialties and Cardiovascular/pulmonary, for it having the highest transcript count as well as it being a specialty that has numerous morbidity associations with other class diseases. All classifiers had difficulties in distinguishing and classifying radiology and neurology. Even SGD clf, the highest performing classifer, was only able to achieve an F1-score of 40% for Radiology, although, the increase from baseline for both Radiology and Neurology was significant.
 
-In conclusion, I believe the reason why Radiology and Neurology had been scoring low for all classifiers is that neuroradiology, within in its' own right, is an estanlished subspecialty of radiology and is widely recognized by medical entitities. Moreover, radiologists are all not the same, there are several branches of radiology that specialize and manifest in entirely different ways, such as neuroradiology, as I've mentioned, as well as interventional radiology. These subspecialties are well established and utilized in many hospitals, so I strongly believe that if we were able to obtain data for a neuroradiology class, the F1 scores for all classifers would significantly improve. However, these are just my opinions and theory, but the findings are salient and vears me towards that direction. 
+In conclusion, I believe the reason why Radiology and Neurology had been scoring low for all classifiers is that neuroradiology, within in its' own right, is an estanlished subspecialty of radiology and is widely recognized. Therer are several branches of radiology that specialize and manifest in entirely different ways, such as neuroradiology, as I've mentioned, as well as interventional radiology. So I strongly believe that if we were able to obtain data for neuroradiology, the classification metrics would increase for all classifers significantly. However, these are just my opinions and theory, but the findings are salient and vears me towards that reasoning. 
 
-I hope you found some insight through this project and thank you for reading it.
+I hope you found this project interesting and let me know if you have any feedback on ways I can further improve.
+Thanks for reading!
 
-## Limitations and future options
-I have not attempted downsampling majority classess, which may have improved scores, simply due to having a great deal of data loss from dropping surgery.
-But, I believe surgery can be partitioned by procedural type and reallocate the data to make good use of it. 
-
-Moreover, I believe implementing a more sophisticated text preprocessing method by addition of conversion of medical jargon, acronyms, and partitioning transcripts by MeSH headings would be effective.
