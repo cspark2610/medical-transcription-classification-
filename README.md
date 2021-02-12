@@ -14,7 +14,7 @@ Both vectorization methods extract features from corpus, that are composed of do
 
 The main distinction between the two methods is IDF weighting. CountVectorization relies on count/frequency of terms to determine weights, while TF-IDF, is the term frequency multiplied by IDF weights. IDF or inverse document frequency, will penalize term weights based on how often they appear among total documents. We will see examples later below.
 
-*from wiki, "tf–idf value increases proportionally to the number of times a word appears 
+* from wiki, "tf–idf value increases proportionally to the number of times a word appears 
 in the document and is offset by the number of documents in the corpus that contain the word".
 
 ## Objective: Classify medical specialties based on transcription notes using a combination of preprocessing methods. Achieveing highest F1-score is the aim.
