@@ -267,6 +267,7 @@ Classification Algorithms:
 * TF-ID scispaCy
 
 * SGDClassifier 
+
                 ===========================================================================
                 Classification Report
                                           precision    recall  f1-score   support
@@ -289,7 +290,9 @@ Classification Algorithms:
                                macro avg       0.57      0.56      0.56       492
                             weighted avg       0.55      0.55      0.55       492
                 ===========================================================================
+                
 * LogisticRegression_OvR 
+
                 ***************************************************************************
                 Classification Report
                                           precision    recall  f1-score   support
@@ -312,7 +315,9 @@ Classification Algorithms:
                                macro avg       0.66      0.57      0.58       492
                             weighted avg       0.62      0.63      0.60       492
                 ===========================================================================
+                
 * LogisticRegression_Multinomial 
+
                 ***************************************************************************
                 Classification Report
                                           precision    recall  f1-score   support
@@ -335,7 +340,9 @@ Classification Algorithms:
                                macro avg       0.65      0.58      0.59       492
                             weighted avg       0.61      0.62      0.60       492
                 ===========================================================================
+                
 * LinearSVC 
+
                 ***************************************************************************
                 Classification Report
                                           precision    recall  f1-score   support
@@ -358,7 +365,9 @@ Classification Algorithms:
                                macro avg       0.57      0.57      0.57       492
                             weighted avg       0.56      0.57      0.56       492
                 ===========================================================================
+                
   * AdaBoostClassifier 
+  
                 ***************************************************************************
                 Classification Report
                                           precision    recall  f1-score   support
@@ -381,7 +390,9 @@ Classification Algorithms:
                                macro avg       0.43      0.39      0.40       492
                             weighted avg       0.41      0.42      0.41       492
                 ===========================================================================
+                
 * KNeighborsClassifier 
+
                 ***************************************************************************
                 Classification Report
                                           precision    recall  f1-score   support
@@ -404,7 +415,9 @@ Classification Algorithms:
                                macro avg       0.62      0.61      0.61       492
                             weighted avg       0.59      0.61      0.60       492
                 ===========================================================================
+                
 * LGBMClassifier 
+
                 ***************************************************************************
                 Classification Report
                                           precision    recall  f1-score   support
@@ -466,58 +479,58 @@ Multinomial Logistic Regression came close at second with a final F1-score of 67
 Final look into SGD TF-IDF LSA_scispaCy model.
 
 Base LSA Tf-Idf SGD Model Classification report:
-===========================================================================
-                          precision    recall  f1-score   support
+                ===========================================================================
+                                          precision    recall  f1-score   support
 
-Cardiovascular/Pulmonary       0.69      0.54      0.61        74
-      ENT-Otolaryngology       0.83      0.79      0.81        19
-        Gastroenterology       0.67      0.73      0.70        45
-         GeneralMedicine       0.62      0.71      0.66        52
-     Hematology-Oncology       0.44      0.39      0.41        18
-              Nephrology       0.56      0.31      0.40        16
-               Neurology       0.27      0.22      0.24        45
-            Neurosurgery       0.22      0.21      0.22        19
-   Obstetrics/Gynecology       0.72      0.84      0.78        31
-           Ophthalmology       0.94      0.94      0.94        16
-              Orthopedic       0.60      0.69      0.64        71
-               Radiology       0.09      0.09      0.09        55
-                 Urology       0.75      0.87      0.81        31
+                Cardiovascular/Pulmonary       0.69      0.54      0.61        74
+                      ENT-Otolaryngology       0.83      0.79      0.81        19
+                        Gastroenterology       0.67      0.73      0.70        45
+                         GeneralMedicine       0.62      0.71      0.66        52
+                     Hematology-Oncology       0.44      0.39      0.41        18
+                              Nephrology       0.56      0.31      0.40        16
+                               Neurology       0.27      0.22      0.24        45
+                            Neurosurgery       0.22      0.21      0.22        19
+                   Obstetrics/Gynecology       0.72      0.84      0.78        31
+                           Ophthalmology       0.94      0.94      0.94        16
+                              Orthopedic       0.60      0.69      0.64        71
+                               Radiology       0.09      0.09      0.09        55
+                                 Urology       0.75      0.87      0.81        31
 
-                accuracy                           0.55       492
-               macro avg       0.57      0.56      0.56       492
-            weighted avg       0.55      0.55      0.55       492
+                                accuracy                           0.55       492
+                               macro avg       0.57      0.56      0.56       492
+                            weighted avg       0.55      0.55      0.55       492
 
-===========================================================================
-Best Estimator - Stochastic Gradient Descent Classifier LSA Tf-IDF
-===========================================================================
-Parameters:
-SGDClassifier(alpha=0.001, class_weight='balanced', eta0=0.01, l1_ratio=0.8,
-              learning_rate='adaptive', loss='modified_huber',
-              n_iter_no_change=10, n_jobs=-1, penalty='l1', power_t=0.01,
-              random_state=123)
+                ===========================================================================
+                Best Estimator - Stochastic Gradient Descent Classifier LSA Tf-IDF
+                ===========================================================================
+                Parameters:
+                SGDClassifier(alpha=0.001, class_weight='balanced', eta0=0.01, l1_ratio=0.8,
+                              learning_rate='adaptive', loss='modified_huber',
+                              n_iter_no_change=10, n_jobs=-1, penalty='l1', power_t=0.01,
+                              random_state=123)
 
-===========================================================================
-Classification Report
-===========================================================================
-                          precision    recall  f1-score   support
+                ===========================================================================
+                Classification Report
+                ===========================================================================
+                                          precision    recall  f1-score   support
 
-Cardiovascular/Pulmonary       0.78      0.66      0.72        74
-      ENT-Otolaryngology       0.89      0.89      0.89        19
-        Gastroenterology       0.86      0.69      0.77        45
-         GeneralMedicine       0.58      0.73      0.65        52
-     Hematology-Oncology       0.52      0.67      0.59        18
-              Nephrology       0.44      0.69      0.54        16
-               Neurology       0.60      0.64      0.62        45
-            Neurosurgery       0.48      0.79      0.60        19
-   Obstetrics/Gynecology       0.79      0.87      0.83        31
-           Ophthalmology       1.00      0.94      0.97        16
-              Orthopedic       0.78      0.79      0.78        71
-               Radiology       0.55      0.31      0.40        55
-                 Urology       0.87      0.84      0.85        31
+                Cardiovascular/Pulmonary       0.78      0.66      0.72        74
+                      ENT-Otolaryngology       0.89      0.89      0.89        19
+                        Gastroenterology       0.86      0.69      0.77        45
+                         GeneralMedicine       0.58      0.73      0.65        52
+                     Hematology-Oncology       0.52      0.67      0.59        18
+                              Nephrology       0.44      0.69      0.54        16
+                               Neurology       0.60      0.64      0.62        45
+                            Neurosurgery       0.48      0.79      0.60        19
+                   Obstetrics/Gynecology       0.79      0.87      0.83        31
+                           Ophthalmology       1.00      0.94      0.97        16
+                              Orthopedic       0.78      0.79      0.78        71
+                               Radiology       0.55      0.31      0.40        55
+                                 Urology       0.87      0.84      0.85        31
 
-                accuracy                           0.70       492
-               macro avg       0.70      0.73      0.71       492
-            weighted avg       0.71      0.70      0.69       492
+                                accuracy                           0.70       492
+                               macro avg       0.70      0.73      0.71       492
+                            weighted avg       0.71      0.70      0.69       492
  
 
 
