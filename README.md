@@ -249,6 +249,8 @@ Lastly, before we move onto modeling, t-SNE visualization plots provide a very n
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img8.png)
 
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img15.png)
+
 You can see that TF-IDF compared to CV had more defined clusters which will make it easier to classify. CV also had clusters however had a laragge area composed of a mix of classes. T-SNE was estimated using cosine metric.
 
 
@@ -264,166 +266,166 @@ Classification Algorithms:
 
 * TF-ID scispaCy
 
-*SGDClassifier 
-===========================================================================
-Classification Report
-                          precision    recall  f1-score   support
+* SGDClassifier 
+                ===========================================================================
+                Classification Report
+                                          precision    recall  f1-score   support
 
-Cardiovascular/Pulmonary       0.69      0.54      0.61        74
-      ENT-Otolaryngology       0.83      0.79      0.81        19
-        Gastroenterology       0.67      0.73      0.70        45
-         GeneralMedicine       0.62      0.71      0.66        52
-     Hematology-Oncology       0.44      0.39      0.41        18
-              Nephrology       0.56      0.31      0.40        16
-               Neurology       0.27      0.22      0.24        45
-            Neurosurgery       0.22      0.21      0.22        19
-   Obstetrics/Gynecology       0.72      0.84      0.78        31
-           Ophthalmology       0.94      0.94      0.94        16
-              Orthopedic       0.60      0.69      0.64        71
-               Radiology       0.09      0.09      0.09        55
-                 Urology       0.75      0.87      0.81        31
+                Cardiovascular/Pulmonary       0.69      0.54      0.61        74
+                      ENT-Otolaryngology       0.83      0.79      0.81        19
+                        Gastroenterology       0.67      0.73      0.70        45
+                         GeneralMedicine       0.62      0.71      0.66        52
+                     Hematology-Oncology       0.44      0.39      0.41        18
+                              Nephrology       0.56      0.31      0.40        16
+                               Neurology       0.27      0.22      0.24        45
+                            Neurosurgery       0.22      0.21      0.22        19
+                   Obstetrics/Gynecology       0.72      0.84      0.78        31
+                           Ophthalmology       0.94      0.94      0.94        16
+                              Orthopedic       0.60      0.69      0.64        71
+                               Radiology       0.09      0.09      0.09        55
+                                 Urology       0.75      0.87      0.81        31
 
-                accuracy                           0.55       492
-               macro avg       0.57      0.56      0.56       492
-            weighted avg       0.55      0.55      0.55       492
-===========================================================================
-*LogisticRegression_OvR 
-***************************************************************************
-Classification Report
-                          precision    recall  f1-score   support
+                                accuracy                           0.55       492
+                               macro avg       0.57      0.56      0.56       492
+                            weighted avg       0.55      0.55      0.55       492
+                ===========================================================================
+* LogisticRegression_OvR 
+                ***************************************************************************
+                Classification Report
+                                          precision    recall  f1-score   support
 
-Cardiovascular/Pulmonary       0.66      0.77      0.71        74
-      ENT-Otolaryngology       0.92      0.63      0.75        19
-        Gastroenterology       0.82      0.69      0.75        45
-         GeneralMedicine       0.53      0.83      0.65        52
-     Hematology-Oncology       0.67      0.11      0.19        18
-              Nephrology       0.67      0.25      0.36        16
-               Neurology       0.55      0.51      0.53        45
-            Neurosurgery       0.36      0.21      0.27        19
-   Obstetrics/Gynecology       0.71      0.77      0.74        31
-           Ophthalmology       1.00      0.88      0.93        16
-              Orthopedic       0.65      0.86      0.74        71
-               Radiology       0.18      0.13      0.15        55
-                 Urology       0.84      0.84      0.84        31
+                Cardiovascular/Pulmonary       0.66      0.77      0.71        74
+                      ENT-Otolaryngology       0.92      0.63      0.75        19
+                        Gastroenterology       0.82      0.69      0.75        45
+                         GeneralMedicine       0.53      0.83      0.65        52
+                     Hematology-Oncology       0.67      0.11      0.19        18
+                              Nephrology       0.67      0.25      0.36        16
+                               Neurology       0.55      0.51      0.53        45
+                            Neurosurgery       0.36      0.21      0.27        19
+                   Obstetrics/Gynecology       0.71      0.77      0.74        31
+                           Ophthalmology       1.00      0.88      0.93        16
+                              Orthopedic       0.65      0.86      0.74        71
+                               Radiology       0.18      0.13      0.15        55
+                                 Urology       0.84      0.84      0.84        31
 
-                accuracy                           0.63       492
-               macro avg       0.66      0.57      0.58       492
-            weighted avg       0.62      0.63      0.60       492
-===========================================================================
-*LogisticRegression_Multinomial 
-***************************************************************************
-Classification Report
-                          precision    recall  f1-score   support
+                                accuracy                           0.63       492
+                               macro avg       0.66      0.57      0.58       492
+                            weighted avg       0.62      0.63      0.60       492
+                ===========================================================================
+* LogisticRegression_Multinomial 
+                ***************************************************************************
+                Classification Report
+                                          precision    recall  f1-score   support
 
-Cardiovascular/Pulmonary       0.65      0.70      0.68        74
-      ENT-Otolaryngology       0.92      0.63      0.75        19
-        Gastroenterology       0.78      0.71      0.74        45
-         GeneralMedicine       0.55      0.79      0.65        52
-     Hematology-Oncology       0.80      0.22      0.35        18
-              Nephrology       0.57      0.25      0.35        16
-               Neurology       0.52      0.49      0.51        45
-            Neurosurgery       0.31      0.21      0.25        19
-   Obstetrics/Gynecology       0.74      0.81      0.77        31
-           Ophthalmology       1.00      0.88      0.93        16
-              Orthopedic       0.65      0.83      0.73        71
-               Radiology       0.17      0.15      0.16        55
-                 Urology       0.84      0.84      0.84        31
+                Cardiovascular/Pulmonary       0.65      0.70      0.68        74
+                      ENT-Otolaryngology       0.92      0.63      0.75        19
+                        Gastroenterology       0.78      0.71      0.74        45
+                         GeneralMedicine       0.55      0.79      0.65        52
+                     Hematology-Oncology       0.80      0.22      0.35        18
+                              Nephrology       0.57      0.25      0.35        16
+                               Neurology       0.52      0.49      0.51        45
+                            Neurosurgery       0.31      0.21      0.25        19
+                   Obstetrics/Gynecology       0.74      0.81      0.77        31
+                           Ophthalmology       1.00      0.88      0.93        16
+                              Orthopedic       0.65      0.83      0.73        71
+                               Radiology       0.17      0.15      0.16        55
+                                 Urology       0.84      0.84      0.84        31
 
-                accuracy                           0.62       492
-               macro avg       0.65      0.58      0.59       492
-            weighted avg       0.61      0.62      0.60       492
-===========================================================================
-*LinearSVC 
-***************************************************************************
-Classification Report
-                          precision    recall  f1-score   support
+                                accuracy                           0.62       492
+                               macro avg       0.65      0.58      0.59       492
+                            weighted avg       0.61      0.62      0.60       492
+                ===========================================================================
+* LinearSVC 
+                ***************************************************************************
+                Classification Report
+                                          precision    recall  f1-score   support
 
-Cardiovascular/Pulmonary       0.68      0.61      0.64        74
-      ENT-Otolaryngology       0.83      0.79      0.81        19
-        Gastroenterology       0.70      0.73      0.72        45
-         GeneralMedicine       0.64      0.73      0.68        52
-     Hematology-Oncology       0.46      0.33      0.39        18
-              Nephrology       0.45      0.31      0.37        16
-               Neurology       0.28      0.20      0.23        45
-            Neurosurgery       0.29      0.32      0.30        19
-   Obstetrics/Gynecology       0.71      0.81      0.76        31
-           Ophthalmology       0.94      0.94      0.94        16
-              Orthopedic       0.62      0.70      0.66        71
-               Radiology       0.07      0.07      0.07        55
-                 Urology       0.77      0.87      0.82        31
+                Cardiovascular/Pulmonary       0.68      0.61      0.64        74
+                      ENT-Otolaryngology       0.83      0.79      0.81        19
+                        Gastroenterology       0.70      0.73      0.72        45
+                         GeneralMedicine       0.64      0.73      0.68        52
+                     Hematology-Oncology       0.46      0.33      0.39        18
+                              Nephrology       0.45      0.31      0.37        16
+                               Neurology       0.28      0.20      0.23        45
+                            Neurosurgery       0.29      0.32      0.30        19
+                   Obstetrics/Gynecology       0.71      0.81      0.76        31
+                           Ophthalmology       0.94      0.94      0.94        16
+                              Orthopedic       0.62      0.70      0.66        71
+                               Radiology       0.07      0.07      0.07        55
+                                 Urology       0.77      0.87      0.82        31
 
-                accuracy                           0.57       492
-               macro avg       0.57      0.57      0.57       492
-            weighted avg       0.56      0.57      0.56       492
-===========================================================================
-*AdaBoostClassifier 
-***************************************************************************
-Classification Report
-                          precision    recall  f1-score   support
+                                accuracy                           0.57       492
+                               macro avg       0.57      0.57      0.57       492
+                            weighted avg       0.56      0.57      0.56       492
+                ===========================================================================
+  * AdaBoostClassifier 
+                ***************************************************************************
+                Classification Report
+                                          precision    recall  f1-score   support
 
-Cardiovascular/Pulmonary       0.48      0.54      0.51        74
-      ENT-Otolaryngology       0.64      0.37      0.47        19
-        Gastroenterology       0.50      0.40      0.44        45
-         GeneralMedicine       0.42      0.73      0.53        52
-     Hematology-Oncology       0.38      0.17      0.23        18
-              Nephrology       0.12      0.06      0.08        16
-               Neurology       0.17      0.13      0.15        45
-            Neurosurgery       0.13      0.11      0.12        19
-   Obstetrics/Gynecology       0.64      0.52      0.57        31
-           Ophthalmology       0.93      0.81      0.87        16
-              Orthopedic       0.50      0.62      0.55        71
-               Radiology       0.08      0.07      0.08        55
-                 Urology       0.62      0.52      0.56        31
+                Cardiovascular/Pulmonary       0.48      0.54      0.51        74
+                      ENT-Otolaryngology       0.64      0.37      0.47        19
+                        Gastroenterology       0.50      0.40      0.44        45
+                         GeneralMedicine       0.42      0.73      0.53        52
+                     Hematology-Oncology       0.38      0.17      0.23        18
+                              Nephrology       0.12      0.06      0.08        16
+                               Neurology       0.17      0.13      0.15        45
+                            Neurosurgery       0.13      0.11      0.12        19
+                   Obstetrics/Gynecology       0.64      0.52      0.57        31
+                           Ophthalmology       0.93      0.81      0.87        16
+                              Orthopedic       0.50      0.62      0.55        71
+                               Radiology       0.08      0.07      0.08        55
+                                 Urology       0.62      0.52      0.56        31
 
-                accuracy                           0.42       492
-               macro avg       0.43      0.39      0.40       492
-            weighted avg       0.41      0.42      0.41       492
-===========================================================================
-*KNeighborsClassifier 
-***************************************************************************
-Classification Report
-                          precision    recall  f1-score   support
+                                accuracy                           0.42       492
+                               macro avg       0.43      0.39      0.40       492
+                            weighted avg       0.41      0.42      0.41       492
+                ===========================================================================
+* KNeighborsClassifier 
+                ***************************************************************************
+                Classification Report
+                                          precision    recall  f1-score   support
 
-Cardiovascular/Pulmonary       0.62      0.69      0.65        74
-      ENT-Otolaryngology       0.94      0.79      0.86        19
-        Gastroenterology       0.76      0.76      0.76        45
-         GeneralMedicine       0.65      0.69      0.67        52
-     Hematology-Oncology       0.50      0.33      0.40        18
-              Nephrology       0.56      0.56      0.56        16
-               Neurology       0.40      0.42      0.41        45
-            Neurosurgery       0.31      0.26      0.29        19
-   Obstetrics/Gynecology       0.75      0.87      0.81        31
-           Ophthalmology       1.00      0.94      0.97        16
-              Orthopedic       0.61      0.75      0.67        71
-               Radiology       0.18      0.11      0.13        55
-                 Urology       0.77      0.77      0.77        31
+                Cardiovascular/Pulmonary       0.62      0.69      0.65        74
+                      ENT-Otolaryngology       0.94      0.79      0.86        19
+                        Gastroenterology       0.76      0.76      0.76        45
+                         GeneralMedicine       0.65      0.69      0.67        52
+                     Hematology-Oncology       0.50      0.33      0.40        18
+                              Nephrology       0.56      0.56      0.56        16
+                               Neurology       0.40      0.42      0.41        45
+                            Neurosurgery       0.31      0.26      0.29        19
+                   Obstetrics/Gynecology       0.75      0.87      0.81        31
+                           Ophthalmology       1.00      0.94      0.97        16
+                              Orthopedic       0.61      0.75      0.67        71
+                               Radiology       0.18      0.11      0.13        55
+                                 Urology       0.77      0.77      0.77        31
 
-                accuracy                           0.61       492
-               macro avg       0.62      0.61      0.61       492
-            weighted avg       0.59      0.61      0.60       492
-===========================================================================
-*LGBMClassifier 
-***************************************************************************
-Classification Report
-                          precision    recall  f1-score   support
+                                accuracy                           0.61       492
+                               macro avg       0.62      0.61      0.61       492
+                            weighted avg       0.59      0.61      0.60       492
+                ===========================================================================
+* LGBMClassifier 
+                ***************************************************************************
+                Classification Report
+                                          precision    recall  f1-score   support
 
-Cardiovascular/Pulmonary       0.67      0.64      0.65        74
-      ENT-Otolaryngology       0.83      0.79      0.81        19
-        Gastroenterology       0.69      0.60      0.64        45
-         GeneralMedicine       0.52      0.62      0.56        52
-     Hematology-Oncology       0.36      0.28      0.31        18
-              Nephrology       0.42      0.31      0.36        16
-               Neurology       0.18      0.16      0.17        45
-            Neurosurgery       0.21      0.21      0.21        19
-   Obstetrics/Gynecology       0.69      0.71      0.70        31
-           Ophthalmology       0.94      0.94      0.94        16
-              Orthopedic       0.59      0.68      0.63        71
-               Radiology       0.11      0.11      0.11        55
-                 Urology       0.79      0.84      0.81        31
+                Cardiovascular/Pulmonary       0.67      0.64      0.65        74
+                      ENT-Otolaryngology       0.83      0.79      0.81        19
+                        Gastroenterology       0.69      0.60      0.64        45
+                         GeneralMedicine       0.52      0.62      0.56        52
+                     Hematology-Oncology       0.36      0.28      0.31        18
+                              Nephrology       0.42      0.31      0.36        16
+                               Neurology       0.18      0.16      0.17        45
+                            Neurosurgery       0.21      0.21      0.21        19
+                   Obstetrics/Gynecology       0.69      0.71      0.70        31
+                           Ophthalmology       0.94      0.94      0.94        16
+                              Orthopedic       0.59      0.68      0.63        71
+                               Radiology       0.11      0.11      0.11        55
+                                 Urology       0.79      0.84      0.81        31
 
-                accuracy                           0.53       492
-               macro avg       0.54      0.53      0.53       492
-            weighted avg       0.52      0.53      0.52       492
+                                accuracy                           0.53       492
+                               macro avg       0.54      0.53      0.53       492
+                            weighted avg       0.52      0.53      0.52       492
  
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img11.png)
