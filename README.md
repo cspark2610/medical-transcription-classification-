@@ -1,4 +1,4 @@
-# Text Classification of Medical Specialties and Evaluation of Different Preprocessing Methods using CountVectorization, TF-IDF, scispaCy's Biomedical NLP Package and Methodology Assessment (editing from tuning)
+# Text Classification of Medical Specialties and Evaluation of Different Preprocessing Methods using CountVectorization, TF-IDF, scispaCy's Biomedical NLP Package and Methodology Assessment (currently editing from tuning)
 
 * Dataset: de-identified public source medical data from mtsamples.com
 * Dataset details: contains 500 rows of de-identified medical information and five columns: medical specialty, descriptions, sample names, keywords
