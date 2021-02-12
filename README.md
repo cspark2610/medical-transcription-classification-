@@ -183,7 +183,7 @@ heent, throat, distress, blood sugar, suppl, sugar, tender, histori, moist, neck
   * Most Correlated CountVectorized Texts: 
 procedur, heent, emergency, daili, blood pressur, sugar, suppl, breath, sleep, histori, neg, auscult, right, medic, sound
 
-# of Differences Between Tf-Idf and CV in top 15: 16
+Num of Differences Between Tf-Idf and CV in top 15: 16
 
 ===========================================================================
 ==> Radiology:
@@ -194,7 +194,7 @@ tricuspid, myoview, contrast, valv, veloc, signal, impress, adenosin, exam, pati
   * Most Correlated CountVectorized Texts: 
 motor, incis, signal, impress, vicryl, room, diagnosi, exam, histori, sutur, patient, anesthesia, procedur, imag, skin
 
-# of Differences Between Tf-Idf and CV in top 15: 20
+Num of Differences Between Tf-Idf and CV in top 15: 20
 
 ===========================================================================
 ==> Urology:
@@ -205,7 +205,7 @@ glan, penile, bladder, cystoscopi, prostat, foreskin, peni, testicl, urethra, sc
   * Most Correlated CountVectorized Texts: 
 glan, penile, urethral, cystoscopi, prostat, prostate, peni, bladder, testicl, urethra, scrotal, scrotum, bladder neck, inguinal, testi
 
-# of Differences Between Tf-Idf and CV in top 15: 4
+Num of Differences Between Tf-Idf and CV in top 15: 4
 
 ===========================================================================
 ==> Ophthalmology:
@@ -216,7 +216,7 @@ phacoemulsif, scleral, right eye, lid, eye, chamb, speculum, len, cataract, ante
   * Most Correlated CountVectorized Texts: 
 phacoemulsif, right eye, lid, eye, chamb, speculum, len, cataract, anterior chamb, ey, intraocular, corneal, right ey, eyelid, capsular bag
 
-# of Differences Between Tf-Idf and CV in top 15: 4
+Num of Differences Between Tf-Idf and CV in top 15: 4
 
 ===========================================================================
 ==> Obstetrics/Gynecology:
@@ -227,7 +227,7 @@ fallopian, placenta, infant, cervix, vagina, fallopian tub, labor, vaginal, babi
   * Most Correlated CountVectorized Texts: 
 fallopian, placenta, infant, cervix, vagina, fallopian tub, pelvic, vaginal, uterine, pregnanc, uteru, ovari, fetal, deliveri, peritoneum
 
-# of Differences Between Tf-Idf and CV in top 15: 4
+Num of Differences Between Tf-Idf and CV in top 15: 4
 
 ===========================================================================
 ==> Nephrology:
@@ -238,7 +238,7 @@ kidney, kidney diseas, stage renal diseas, transplant, end stage, end stage rena
   * Most Correlated CountVectorized Texts: 
 kidney, stage renal diseas, transplant, renal mass, end stage, end stage renal, diagnosi end, diagnosi end stage, nephrostomy, renal diseas, renal, stage renal, dialysi, vein, cephalic vein
 
-# of Differences Between Tf-Idf and CV in top 15: 4
+Num of Differences Between Tf-Idf and CV in top 15: 4
 
 You can see that more specizlied cases had less term differences between TFIDF and CV. But, General Medicine and Radiology which overlaps with many other specialties had high number of term differences,
 
