@@ -444,7 +444,7 @@ Classification Algorithms:
 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img11.png)
 
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img_17.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img_17.PNG)
 
 So, from our results it is quite evident that all three preprocessing methods are fairly even in scoring. Adaboosted Trees are lowest, but that is to be expected, since it uses slow learners to amplify its classification ability. Both logistic regression models produced the highest F1 scores; LR is always reliable. For the most case, LSA tends to produce higher metrics as well as spaCy, but it is not convincing. So we will have to tune hyperparameters to get a better estimate of the impact of preprocessing methods. 
 
@@ -461,7 +461,7 @@ For LightGBM, I used Optuna, which is a hyperparameter optimization framework, f
 ## Final Results
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img12.png)
 
-![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img_18.png)
+![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img_18.PNG)
 
 The plot is between LSA+scispaCy and LSA models, so in theory, it should display the most discrepency of scispaCy's impact on metrics. 
 Stochastic Gradient Descent Classifier with Tf-Idf vectorization produced highest F1-score, 69.1%. And LSA_spaCy tends to out perform in every model. 
