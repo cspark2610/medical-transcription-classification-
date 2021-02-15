@@ -142,7 +142,8 @@ So, with the use of a helper function for calculating the amount of estimators n
 ### EDA and t-SNE visualizaiton
 Now that we have preprocessed our transcripts, I'd like to calculate the mean and total number of 'cleaned' words for each class. 
 ![alt text](https://github.com/cspark2610/medical-transcription-classification-/blob/main/images/img_19.PNG)
-First figure are results from text preprocessing with scispaCy; the latter does not include scispaCy.
+
+First figure are results from text preprocessing with scispaCy; the latter does not include scispaCy. The average text per transcritps and total words for most medical specialty classes are lower with scispaCy than the values without using scispaCy.
 
 The distribution is fairly even. But it can be argued that surgically dominant specialties such as our first and second classess, Orthopedics and Neurosurgery, have higher text averages per transcription; perhaps, due to the preciseness and detailing nature demanded for documenting more complex procedures. While in contrast, Radiology has the least average amount which makes sense given their role; radiologists need to communicate succinctly and be forthright when examining and diagnosising imaging scans and MRIs. 
 
